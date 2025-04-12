@@ -1173,15 +1173,224 @@
             // Get the weather panel
             const weatherPanel = document.getElementById('day-weather-panel');
             
-            // Month is fixed to June for demo, but could be dynamic based on trip dates
-            const month = 6;
-            const weatherData = window.chicagoWeatherData[month];
-            
-            // Update panel with day-specific styling and data
+            // Update panel with day-specific styling
             weatherPanel.style.backgroundColor = day.color;
+            
+            // Show loading state
             weatherPanel.innerHTML = `
                 <div class="day-weather-content">
                     <div class="weather-day-title">${day.title}</div>
+                    <div class="weather-loading">Loading weather data...</div>
+                    <button id="close-weather-panel" class="close-weather-panel">×</button>
+                </div>
+            `;
+            
+            // Display the panel
+            weatherPanel.style.display = 'block';
+            
+            // Fetch real-time weather data for Chicago
+            fetchWeatherData(day);
+            
+            // Add event listener to close button
+            document.getElementById('close-weather-panel').addEventListener('click', function() {
+                weatherPanel.style.display = 'none';
+            });
+        }
+        
+        // Function to fetch weather data from OpenWeatherMap API
+        function fetchWeatherData(day) {
+            const weatherPanel = document.getElementById('day-weather-panel');
+            const apiKey = 'YOUR_OPENWEATHERMAP_API_KEY'; // Replace with your API key
+            
+            // For demo purposes using a free tier API key (limited calls)
+            // Get a free API key by signing up at: https://home.openweathermap.org/users/sign_up
+            const demoApiKey = '0de82d0d57665d93c306882975615d8c'; // This is a limited demo key - replace with your own for production
+            
+            // Chicago coordinates
+            const lat = 41.8781;
+            const lon = -87.6298;
+            
+            // Calculate the forecast day offset (current day + dayId - 1)
+            // Since we're using 5-day forecast, limit to max 4
+            const forecastDayOffset = Math.min(day.id - 1, 4);
+            
+            // API URL for 5-day forecast (every 3 hours)
+            const apiUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${demoApiKey}`;
+            
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Weather API request failed');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Process and display the weather data
+                    displayWeatherData(data, day, forecastDayOffset);
+                })
+                .catch(error => {
+                    console.error('Error fetching weather data:', error);
+                    
+                    // If API call fails, fall back to static data
+                    displayStaticWeatherData(day);
+                });
+        }
+        
+        // Display weather data from API response
+        function displayWeatherData(data, day, forecastDayOffset) {
+            const weatherPanel = document.getElementById('day-weather-panel');
+            
+            // Get the forecast list
+            const forecastList = data.list;
+            
+            // Calculate the date for the selected day
+            const now = new Date();
+            const targetDate = new Date();
+            targetDate.setDate(now.getDate() + forecastDayOffset);
+            
+            // Format date as YYYY-MM-DD
+            const targetDateStr = targetDate.toISOString().split('T')[0];
+            
+            // Filter forecast data for the target date
+            const dayForecasts = forecastList.filter(item => {
+                return item.dt_txt.startsWith(targetDateStr);
+            });
+            
+            if (dayForecasts.length === 0) {
+                // If no forecast available for this day, use static data
+                displayStaticWeatherData(day);
+                return;
+            }
+            
+            // Get the noon forecast (or closest to it)
+            const noonForecast = dayForecasts.reduce((closest, current) => {
+                const currentHour = new Date(current.dt_txt).getHours();
+                const closestHour = new Date(closest.dt_txt).getHours();
+                return Math.abs(currentHour - 12) < Math.abs(closestHour - 12) ? current : closest;
+            }, dayForecasts[0]);
+            
+            // Get morning and evening forecasts for high/low
+            const temperatures = dayForecasts.map(f => f.main.temp);
+            const highTemp = Math.round(Math.max(...temperatures));
+            const lowTemp = Math.round(Math.min(...temperatures));
+            
+            // Get weather condition and icon
+            const weatherCondition = noonForecast.weather[0].main;
+            const weatherDescription = noonForecast.weather[0].description;
+            const weatherIcon = noonForecast.weather[0].icon;
+            const weatherIconUrl = `https://openweathermap.org/img/wn/${weatherIcon}@2x.png`;
+            
+            // Get precipitation probability (if available)
+            let precipProb = "N/A";
+            if (noonForecast.pop !== undefined) {
+                precipProb = `${Math.round(noonForecast.pop * 100)}%`;
+            }
+            
+            // Format date
+            const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const dayName = dayNames[targetDate.getDay()];
+            const monthName = monthNames[targetDate.getMonth()];
+            const formattedDate = `${dayName}, ${monthName} ${targetDate.getDate()}`;
+            
+            // Look up sunrise/sunset times (these don't come in the forecast API)
+            // We'll use seasonal averages for Chicago
+            const month = targetDate.getMonth() + 1;
+            const sunriseSunsetData = {
+                1: { sunrise: "7:18 AM", sunset: "4:52 PM" },
+                2: { sunrise: "6:56 AM", sunset: "5:27 PM" },
+                3: { sunrise: "6:17 AM", sunset: "5:59 PM" },
+                4: { sunrise: "5:27 AM", sunset: "6:33 PM" },
+                5: { sunrise: "4:50 AM", sunset: "7:05 PM" },
+                6: { sunrise: "4:36 AM", sunset: "7:30 PM" },
+                7: { sunrise: "4:47 AM", sunset: "7:27 PM" },
+                8: { sunrise: "5:13 AM", sunset: "6:54 PM" },
+                9: { sunrise: "5:41 AM", sunset: "6:06 PM" },
+                10: { sunrise: "6:09 AM", sunset: "5:15 PM" },
+                11: { sunrise: "6:38 AM", sunset: "4:34 PM" },
+                12: { sunrise: "7:13 AM", sunset: "4:22 PM" }
+            };
+            
+            // Update the weather panel with the forecast data
+            weatherPanel.innerHTML = `
+                <div class="day-weather-content">
+                    <div class="weather-day-title">${day.title}</div>
+                    <div class="weather-date">${formattedDate}</div>
+                    
+                    <div class="weather-main">
+                        <img src="${weatherIconUrl}" alt="${weatherDescription}" class="weather-main-icon">
+                        <div class="weather-main-temp">${Math.round(noonForecast.main.temp)}°F</div>
+                        <div class="weather-main-desc">${weatherDescription}</div>
+                    </div>
+                    
+                    <div class="weather-info-grid">
+                        <div class="weather-info-item">
+                            <div class="weather-icon">🌡️</div>
+                            <div class="weather-info-title">High/Low</div>
+                            <div class="weather-info-value">${highTemp}°F / ${lowTemp}°F</div>
+                        </div>
+                        <div class="weather-info-item">
+                            <div class="weather-icon">💧</div>
+                            <div class="weather-info-title">Humidity</div>
+                            <div class="weather-info-value">${noonForecast.main.humidity}%</div>
+                        </div>
+                        <div class="weather-info-item">
+                            <div class="weather-icon">☔</div>
+                            <div class="weather-info-title">Rain Chance</div>
+                            <div class="weather-info-value">${precipProb}</div>
+                        </div>
+                        <div class="weather-info-item">
+                            <div class="weather-icon">💨</div>
+                            <div class="weather-info-title">Wind</div>
+                            <div class="weather-info-value">${Math.round(noonForecast.wind.speed)} mph</div>
+                        </div>
+                        <div class="weather-info-item">
+                            <div class="weather-icon">🌅</div>
+                            <div class="weather-info-title">Sunrise</div>
+                            <div class="weather-info-value">${sunriseSunsetData[month].sunrise}</div>
+                        </div>
+                        <div class="weather-info-item">
+                            <div class="weather-icon">🌇</div>
+                            <div class="weather-info-title">Sunset</div>
+                            <div class="weather-info-value">${sunriseSunsetData[month].sunset}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="weather-api-credit">
+                        Data from <a href="https://openweathermap.org/" target="_blank">OpenWeatherMap</a>
+                    </div>
+                    
+                    <button id="close-weather-panel" class="close-weather-panel">×</button>
+                </div>
+            `;
+            
+            // Re-add event listener to close button
+            document.getElementById('close-weather-panel').addEventListener('click', function() {
+                weatherPanel.style.display = 'none';
+            });
+        }
+        
+        // Display static weather data as fallback
+        function displayStaticWeatherData(day) {
+            const weatherPanel = document.getElementById('day-weather-panel');
+            
+            // For demo: Always use June data
+            const month = 6;
+            const weatherData = {
+                month: "June", 
+                high: "78°F", 
+                low: "59°F", 
+                precip: "3.9 in", 
+                sunrise: "4:36 AM", 
+                sunset: "7:30 PM"
+            };
+            
+            // Update panel with static data
+            weatherPanel.innerHTML = `
+                <div class="day-weather-content">
+                    <div class="weather-day-title">${day.title}</div>
+                    <div class="weather-date">Average for ${weatherData.month}</div>
+                    
                     <div class="weather-info-grid">
                         <div class="weather-info-item">
                             <div class="weather-icon">🌡️</div>
@@ -1204,19 +1413,21 @@
                             <div class="weather-info-value">${weatherData.sunset}</div>
                         </div>
                     </div>
+                    
+                    <div class="weather-static-notice">
+                        This is historical average data. Real-time forecast unavailable.
+                    </div>
+                    
                     <button id="close-weather-panel" class="close-weather-panel">×</button>
                 </div>
             `;
             
-            // Display the panel
-            weatherPanel.style.display = 'block';
-            
-            // Add event listener to close button
+            // Re-add event listener to close button
             document.getElementById('close-weather-panel').addEventListener('click', function() {
                 weatherPanel.style.display = 'none';
             });
         }
-        
+
         // Update the document ready function to initialize weather info and panel
         document.addEventListener('DOMContentLoaded', async function() {
             await initMap();
@@ -1880,6 +2091,65 @@
             width: 80%;
             margin-bottom: 10px;
         }
+    }
+
+    /* Enhanced Day Weather Panel Styles */
+    .weather-date {
+        font-size: 14px;
+        margin-bottom: 15px;
+        opacity: 0.9;
+    }
+    
+    .weather-main {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    
+    .weather-main-icon {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 5px;
+    }
+    
+    .weather-main-temp {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 5px;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    
+    .weather-main-desc {
+        font-size: 16px;
+        text-transform: capitalize;
+        margin-bottom: 10px;
+    }
+    
+    .weather-api-credit {
+        margin-top: 15px;
+        font-size: 12px;
+        opacity: 0.8;
+    }
+    
+    .weather-api-credit a {
+        color: inherit;
+        text-decoration: underline;
+    }
+    
+    .weather-static-notice {
+        margin-top: 15px;
+        font-size: 13px;
+        padding: 8px 12px;
+        background-color: rgba(255,255,255,0.2);
+        border-radius: 6px;
+        text-align: center;
+    }
+    
+    .weather-loading {
+        padding: 20px;
+        text-align: center;
+        font-style: italic;
     }
     </style>
 </body>
