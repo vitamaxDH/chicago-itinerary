@@ -667,216 +667,24 @@
         }
         
         // Initialize when DOM is ready
-        document.addEventListener('DOMContentLoaded', initMap);
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Test the weather API
+            // testWeatherAPI(); // Commented out - not needed since weather section was removed
+            
+            // Initialize the map and other components
+            await initMap();
+            createUI();
+            showDayLocations(currentDay);
+            createKanbanView();
+            createGanttChart();
+            initializeTabs();
 
-        // Helper function to create Kanban view
-        function createKanbanView() {
-            const kanbanBoard = document.getElementById('kanban-board');
-            if (!kanbanBoard) return;
-            
-            kanbanBoard.innerHTML = '';
-            
-            // Create columns for each day
-            tripData.days.forEach(day => {
-                const column = document.createElement('div');
-                column.className = 'kanban-column';
-                
-                const columnTitle = document.createElement('h3');
-                columnTitle.className = `kanban-column-title day-${day.id}-title`;
-                columnTitle.textContent = day.title.split(':')[0];
-                
-                column.appendChild(columnTitle);
-                
-                // Add cards for each activity
-                day.activities.forEach(activity => {
-                    const card = document.createElement('div');
-                    card.className = 'kanban-card';
-                    
-                    const timeDiv = document.createElement('div');
-                    timeDiv.className = 'kanban-time';
-                    timeDiv.textContent = activity.time;
-                    
-                    const activityDiv = document.createElement('div');
-                    activityDiv.className = 'kanban-activity';
-                    activityDiv.textContent = activity.activity;
-                    
-                    const placeDiv = document.createElement('div');
-                    placeDiv.className = 'kanban-place';
-                    
-                    // Create Google Maps URL
-                    const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activity.place + ' ' + activity.address)}`;
-                    
-                    // Create a hyperlink for the place name
-                    placeDiv.innerHTML = `<a href="${mapUrl}" target="_blank" class="place-link">${activity.place}</a>`;
-                    
-                    card.appendChild(timeDiv);
-                    card.appendChild(activityDiv);
-                    card.appendChild(placeDiv);
-                    
-                    column.appendChild(card);
-                });
-                
-                kanbanBoard.appendChild(column);
-            });
-        }
-
-        // Helper function to create Gantt chart
-        function createGanttChart() {
-            const ganttContainer = document.getElementById('gantt-container');
-            if (!ganttContainer) return;
-            
-            ganttContainer.innerHTML = '';
-            
-            // Create header with time markers
-            const header = document.createElement('div');
-            header.className = 'gantt-header';
-            
-            const headerLabel = document.createElement('div');
-            headerLabel.className = 'gantt-header-label';
-            
-            const timeline = document.createElement('div');
-            timeline.className = 'gantt-timeline';
-            
-            // Create time markers (9am to 10pm)
-            for (let hour = 9; hour <= 22; hour++) {
-                const marker = document.createElement('div');
-                marker.className = 'gantt-time-marker';
-                marker.textContent = hour <= 12 ? `${hour}am` : `${hour-12}pm`;
-                timeline.appendChild(marker);
-            }
-            
-            header.appendChild(headerLabel);
-            header.appendChild(timeline);
-            ganttContainer.appendChild(header);
-            
-            // Create rows for each day
-            tripData.days.forEach(day => {
-                const row = document.createElement('div');
-                row.className = 'gantt-row';
-                
-                const rowLabel = document.createElement('div');
-                rowLabel.className = `gantt-row-label day-${day.id}-label`;
-                rowLabel.textContent = `Day ${day.id}`;
-                
-                const rowTimeline = document.createElement('div');
-                rowTimeline.className = 'gantt-timeline';
-                
-                // Create activity bars
-                day.activities.forEach(activity => {
-                    // Calculate position and width based on time
-                    // Assuming 9am (9) to 10pm (22) = 0% to 100% of timeline width
-                    const timelineStart = 9;  // 9am
-                    const timelineEnd = 22;   // 10pm
-                    const timelineRange = timelineEnd - timelineStart;
-                    
-                    const left = ((activity.timeStart - timelineStart) / timelineRange) * 100;
-                    const width = ((activity.timeEnd - activity.timeStart) / timelineRange) * 100;
-                    
-                    const bar = document.createElement('div');
-                    bar.className = `gantt-bar day-${day.id}-bar`;
-                    bar.style.left = `${left}%`;
-                    bar.style.width = `${width}%`;
-                    bar.title = `${activity.place}: ${activity.time}`;
-                    
-                    // Create Google Maps URL
-                    const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activity.place + ' ' + activity.address)}`;
-                    
-                    // Create a more meaningful bar label
-                    const barText = document.createElement('span');
-                    
-                    // Create a more descriptive label based on activity type and place
-                    let labelText = '';
-                    
-                    // For places that start with "The", use the next word instead
-                    if (activity.place.startsWith('The ')) {
-                        // For "The Purple Pig", show "Purple" or "Pig" depending on space
-                        const words = activity.place.split(' ');
-                        if (words.length > 2) {
-                            labelText = words[1]; // Get the second word instead of "The"
-                        } else {
-                            labelText = activity.place.substring(4); // Skip "The "
-                        }
-                    } else if (activity.place.includes(' ')) {
-                        // For places with multiple words, use a more distinctive word
-                        const words = activity.place.split(' ');
-                        // Try to use a distinctive word, not common words like "Park", "Museum", etc.
-                        const commonWords = ['park', 'museum', 'tower', 'pier', 'center', 'mile', 'chicago', 'field', 'aquarium'];
-                        let distinctiveWord = words[0];
-                        
-                        for (const word of words) {
-                            // If we find a word that's not common, use it
-                            if (!commonWords.includes(word.toLowerCase())) {
-                                distinctiveWord = word;
-                                break;
-                            }
-                        }
-                        labelText = distinctiveWord;
-                    } else {
-                        // For single-word places, use the full name
-                        labelText = activity.place;
-                    }
-                    
-                    // For specific places, override with better labels
-                    if (activity.place === 'Millennium Park & The Bean') {
-                        labelText = 'Bean Statue';
-                    } else if (activity.place === 'Chicago Architecture River Cruise') {
-                        labelText = 'River Cruise';
-                    } else if (activity.place === 'Chicago Riverwalk') {
-                        labelText = 'River Walk';
-                    } else if (activity.place === 'The Magnificent Mile') {
-                        labelText = 'Mag Mile Shopping';
-                    } else if (activity.place === 'Chicago History Museum') {
-                        labelText = 'History Museum';
-                    } else if (activity.place === 'Navy Pier') {
-                        labelText = 'Navy Pier Visit';
-                    } else if (activity.place === 'Field Museum') {
-                        labelText = 'Field Museum';
-                    } else if (activity.place === 'Shedd Aquarium') {
-                        labelText = 'Shedd Aquarium';
-                    } else if (activity.place === 'Grant Park') {
-                        labelText = 'Grant Park';
-                    } else if (activity.place === 'Lou Malnati\'s Pizzeria') {
-                        labelText = 'Deep Dish Pizza';
-                    } else if (activity.place === 'The Purple Pig') {
-                        labelText = 'Purple Pig Lunch';
-                    } else if (activity.place === 'The Gage') {
-                        labelText = 'Gage Gastropub';
-                    } else if (activity.place === 'Willis Tower Skydeck') {
-                        labelText = 'Willis Skydeck';
-                    } else if (activity.place === 'Kim and Carlo\'s Hot Dog Stand') {
-                        labelText = 'Hot Dog Lunch';
-                    } else if (activity.place === 'Lincoln Park Zoo') {
-                        labelText = 'Lincoln Zoo';
-                    } else if (activity.place === 'RJ Grunts') {
-                        labelText = 'RJ Grunts Lunch';
-                    } else if (activity.place === 'Wrigley Field') {
-                        labelText = 'Wrigley Field';
-                    } else if (activity.place === 'Wrigleyville') {
-                        labelText = 'Wrigleyville Area';
-                    } else if (activity.place === 'Smoke Daddy') {
-                        labelText = 'Smoke Daddy BBQ';
-                    } else if (activity.place === 'Portillo\'s') {
-                        labelText = 'Portillo\'s Dinner';
-                    }
-                    
-                    // Add activity type prefix if it's a distinctive action
-                    if (activity.activity === 'Lunch' && !labelText.includes('Lunch')) {
-                        labelText = 'Lunch: ' + labelText;
-                    } else if (activity.activity === 'Dinner' && !labelText.includes('Dinner')) {
-                        labelText = 'Dinner: ' + labelText;
-                    }
-                    
-                    barText.innerHTML = `<a href="${mapUrl}" target="_blank" class="gantt-link">${labelText}</a>`;
-                    
-                    bar.appendChild(barText);
-                    rowTimeline.appendChild(bar);
-                });
-                
-                row.appendChild(rowLabel);
-                row.appendChild(rowTimeline);
-                ganttContainer.appendChild(row);
-            });
-        }
+            // Comment out weather-related functions since weather section was removed
+            // populateWeatherInfo();
+            // createWeatherPanelContainer();
+            // addCacheClearButton();
+            // updateDayWeatherPanel(currentDay);
+        });
 
         // Add this to your JavaScript to handle tab switching
         function initializeTabs() {
@@ -1266,35 +1074,19 @@
             });
         }
 
-        // Run the API test when the page loads
-        document.addEventListener('DOMContentLoaded', async function() {
-            // Test the weather API
-            testWeatherAPI();
-            
-            // Initialize the map and other components
-            await initMap();
-            createUI();
-            showDayLocations(currentDay);
-            createKanbanView();
-            createGanttChart();
-            initializeTabs();
-            populateWeatherInfo();
-            createWeatherPanelContainer();
-            
-            // Add cache clear button
-            addCacheClearButton();
-            
-            // Show initial day weather
-            updateDayWeatherPanel(currentDay);
-        });
-
         // Update the day weather panel with data for the specific day
         function updateDayWeatherPanel(dayId) {
-            const day = tripData.days.find(d => d.id === dayId);
-            if (!day) return;
-            
             // Get the weather panel
             const weatherPanel = document.getElementById('day-weather-panel');
+            
+            // Skip if the panel doesn't exist
+            if (!weatherPanel) {
+                console.log('Weather panel not found in the DOM. Skipping weather panel update.');
+                return;
+            }
+            
+            const day = tripData.days.find(d => d.id === dayId);
+            if (!day) return;
             
             // Update panel with day-specific styling
             weatherPanel.style.backgroundColor = day.color;
@@ -1336,34 +1128,48 @@
 
         // Add a button to clear the cache (for debugging)
         function addCacheClearButton() {
+            // Check if weather section exists
+            const weatherSection = document.querySelector('.weather-section');
+            if (!weatherSection) {
+                console.log('Weather section not found, skipping cache clear button creation');
+                return;
+            }
+            
             // Check if button already exists
             if (document.getElementById('clear-weather-cache')) {
                 return;
             }
             
-            const weatherSection = document.querySelector('.weather-section');
-            if (weatherSection) {
-                const button = document.createElement('button');
-                button.id = 'clear-weather-cache';
-                button.className = 'clear-cache-button';
-                button.innerText = 'Clear Weather Cache';
-                button.style.margin = '10px';
-                button.style.padding = '5px 10px';
-                button.style.backgroundColor = '#f0f0f0';
-                button.style.border = '1px solid #ccc';
-                button.style.borderRadius = '4px';
-                button.style.cursor = 'pointer';
-                button.addEventListener('click', function() {
-                    clearWeatherCache();
-                    alert('Weather cache cleared');
-                });
-                
-                weatherSection.appendChild(button);
-            }
+            const button = document.createElement('button');
+            button.id = 'clear-weather-cache';
+            button.className = 'clear-cache-button';
+            button.innerText = 'Clear Weather Cache';
+            button.style.margin = '10px';
+            button.style.padding = '5px 10px';
+            button.style.backgroundColor = '#f0f0f0';
+            button.style.border = '1px solid #ccc';
+            button.style.borderRadius = '4px';
+            button.style.cursor = 'pointer';
+            button.addEventListener('click', function() {
+                clearWeatherCache();
+                alert('Weather cache cleared');
+            });
+            
+            weatherSection.appendChild(button);
         }
 
         // Add this to your JavaScript to handle weather data
         function populateWeatherInfo() {
+            // Check if weather elements exist
+            const tableBody = document.getElementById('weather-table-body');
+            const tipsContent = document.getElementById('seasonal-tips-content');
+            
+            // Skip if the elements don't exist
+            if (!tableBody || !tipsContent) {
+                console.log('Weather elements not found in the DOM. Skipping weather info population.');
+                return;
+            }
+            
             // Get month from trip data or default to June (for demonstration)
             const tripMonth = 6; // June by default - in real app, extract from trip dates
             
@@ -1383,7 +1189,6 @@
             };
             
             // Generate table rows for the month and surrounding months
-            const tableBody = document.getElementById('weather-table-body');
             const monthsToShow = [tripMonth - 1, tripMonth, tripMonth + 1].filter(m => m >= 1 && m <= 12);
             
             monthsToShow.forEach(month => {
@@ -1401,7 +1206,6 @@
             });
             
             // Add seasonal tips for the trip month
-            const tipsContent = document.getElementById('seasonal-tips-content');
             tipsContent.innerHTML = `
                 <h5>${weatherData[tripMonth].month} Weather Tips:</h5>
                 <p>${weatherData[tripMonth].tips}</p>
@@ -1416,6 +1220,13 @@
 
         // Create a container for the day weather panel
         function createWeatherPanelContainer() {
+            // Check if map element exists
+            const mapContainer = document.getElementById('map');
+            if (!mapContainer) {
+                console.log('Map container not found in the DOM. Skipping weather panel creation.');
+                return;
+            }
+
             const container = document.createElement('div');
             container.id = 'day-weather-panel';
             container.className = 'day-weather-panel';
@@ -1424,7 +1235,6 @@
             container.style.display = 'none';
             
             // Insert before the map
-            const mapContainer = document.getElementById('map');
             mapContainer.parentNode.insertBefore(container, mapContainer);
         }
 
