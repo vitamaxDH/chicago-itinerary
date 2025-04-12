@@ -104,6 +104,13 @@
             padding-bottom: 1rem;
             border-bottom: 2px solid #e2e8f0;
         }
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 15px;
+            border-radius: 10px;
+        }
         @media (max-width: 768px) {
             .button-container {
                 flex-direction: column;
@@ -113,6 +120,7 @@
             }
             .itinerary-table {
                 font-size: 0.875rem;
+                min-width: 650px;
             }
         }
         .leaflet-marker-icon {
@@ -123,24 +131,362 @@
             font-weight: bold;
             color: white;
         }
+        .number-col {
+            width: 40px;
+            text-align: center;
+        }
     </style>
     <script>
         let map;
-        let day1Markers = [];
-        let day2Markers = [];
-        let day3Markers = [];
-        let day4Markers = [];
+        let dayMarkers = {};
         let chicagoRiverPolyline;
-        let day1Route;
-        let day2Route;
-        let day3Route;
-        let day4Route;
+        let dayRoutes = {};
+        let tripData = null;
+        let currentDay = 1;
 
-        function initMap() {
+        // Embed the JSON data directly instead of fetching it
+        function fetchTripData() {
+            // Embedded trip data
+            tripData = {
+              "tripTitle": "Chicago Trip Itinerary 2025",
+              "days": [
+                {
+                  "id": 1,
+                  "title": "Day 1: Downtown Chicago",
+                  "color": "#3b82f6",
+                  "mapView": {
+                    "lat": 41.8825,
+                    "lng": -87.6233,
+                    "zoom": 13
+                  },
+                  "activities": [
+                    {
+                      "id": 1,
+                      "time": "9:00 AM - 11:00 AM",
+                      "timeStart": 9,
+                      "timeEnd": 11,
+                      "activity": "Visit",
+                      "place": "Millennium Park & The Bean",
+                      "address": "201 E Randolph St, Chicago, IL 60602",
+                      "note": "Iconic Chicago landmark",
+                      "coordinates": [41.8826, -87.6233]
+                    },
+                    {
+                      "id": 2,
+                      "time": "11:30 AM - 1:30 PM",
+                      "timeStart": 11.5,
+                      "timeEnd": 13.5,
+                      "activity": "Lunch",
+                      "place": "The Purple Pig",
+                      "address": "444 N Michigan Ave, Chicago, IL 60611",
+                      "note": "Mediterranean cuisine",
+                      "coordinates": [41.8909, -87.6246]
+                    },
+                    {
+                      "id": 3,
+                      "time": "2:00 PM - 4:00 PM",
+                      "timeStart": 14,
+                      "timeEnd": 16,
+                      "activity": "Tour",
+                      "place": "Chicago Architecture River Cruise",
+                      "address": "112 E Wacker Dr, Chicago, IL 60601",
+                      "note": "Best way to see city architecture",
+                      "coordinates": [41.8875, -87.6264],
+                      "isRiver": true,
+                      "riverCoordinates": [
+                        [41.8875, -87.6264],
+                        [41.8882, -87.6289],
+                        [41.8891, -87.6321],
+                        [41.8898, -87.6352],
+                        [41.8898, -87.6387],
+                        [41.8886, -87.6412]
+                      ]
+                    },
+                    {
+                      "id": 4,
+                      "time": "5:00 PM - 7:00 PM",
+                      "timeStart": 17,
+                      "timeEnd": 19,
+                      "activity": "Visit",
+                      "place": "Chicago Riverwalk",
+                      "address": "Chicago Riverwalk, Chicago, IL 60601",
+                      "note": "Scenic walk along the river",
+                      "coordinates": [41.8869, -87.6244]
+                    },
+                    {
+                      "id": 5,
+                      "time": "7:30 PM - 9:30 PM",
+                      "timeStart": 19.5,
+                      "timeEnd": 21.5,
+                      "activity": "Dinner",
+                      "place": "The Gage",
+                      "address": "24 S Michigan Ave, Chicago, IL 60603",
+                      "note": "Upscale gastropub",
+                      "coordinates": [41.8816, -87.6243]
+                    }
+                  ]
+                },
+                {
+                  "id": 2,
+                  "title": "Day 2: Museum Campus & South Loop",
+                  "color": "#10b981",
+                  "mapView": {
+                    "lat": 41.8663,
+                    "lng": -87.6170,
+                    "zoom": 14
+                  },
+                  "activities": [
+                    {
+                      "id": 1,
+                      "time": "9:00 AM - 11:30 AM",
+                      "timeStart": 9,
+                      "timeEnd": 11.5,
+                      "activity": "Visit",
+                      "place": "Field Museum",
+                      "address": "1400 S Lake Shore Dr, Chicago, IL 60605",
+                      "note": "Natural history museum",
+                      "coordinates": [41.8663, -87.6170]
+                    },
+                    {
+                      "id": 2,
+                      "time": "12:00 PM - 1:30 PM",
+                      "timeStart": 12,
+                      "timeEnd": 13.5,
+                      "activity": "Lunch",
+                      "place": "Kim and Carlo's Hot Dog Stand",
+                      "address": "Museum Campus, Chicago, IL 60605",
+                      "note": "Popular hot dog stand near museums",
+                      "coordinates": [41.8661, -87.6150]
+                    },
+                    {
+                      "id": 3,
+                      "time": "2:00 PM - 4:30 PM",
+                      "timeStart": 14,
+                      "timeEnd": 16.5,
+                      "activity": "Visit",
+                      "place": "Shedd Aquarium",
+                      "address": "1200 S Lake Shore Dr, Chicago, IL 60605",
+                      "note": "One of the largest indoor aquariums",
+                      "coordinates": [41.8676, -87.6140]
+                    },
+                    {
+                      "id": 4,
+                      "time": "5:00 PM - 6:30 PM",
+                      "timeStart": 17,
+                      "timeEnd": 18.5,
+                      "activity": "Visit",
+                      "place": "Grant Park",
+                      "address": "337 E Randolph St, Chicago, IL 60601",
+                      "note": "Urban park with Buckingham Fountain",
+                      "coordinates": [41.8762, -87.6188]
+                    },
+                    {
+                      "id": 5,
+                      "time": "7:00 PM - 9:00 PM",
+                      "timeStart": 19,
+                      "timeEnd": 21,
+                      "activity": "Dinner",
+                      "place": "Lou Malnati's Pizzeria",
+                      "address": "805 S State St, Chicago, IL 60605",
+                      "note": "Famous Chicago deep dish pizza",
+                      "coordinates": [41.8717, -87.6275]
+                    }
+                  ]
+                },
+                {
+                  "id": 3,
+                  "title": "Day 3: North Side & Lake View",
+                  "color": "#f59e0b",
+                  "mapView": {
+                    "lat": 41.9484,
+                    "lng": -87.6553,
+                    "zoom": 13
+                  },
+                  "activities": [
+                    {
+                      "id": 1,
+                      "time": "9:30 AM - 11:30 AM",
+                      "timeStart": 9.5,
+                      "timeEnd": 11.5,
+                      "activity": "Visit",
+                      "place": "Lincoln Park Zoo",
+                      "address": "2001 N Clark St, Chicago, IL 60614",
+                      "note": "Free zoo with diverse animal collection",
+                      "coordinates": [41.9217, -87.6337]
+                    },
+                    {
+                      "id": 2,
+                      "time": "12:00 PM - 1:30 PM",
+                      "timeStart": 12,
+                      "timeEnd": 13.5,
+                      "activity": "Lunch",
+                      "place": "RJ Grunts",
+                      "address": "2056 N Lincoln Park W, Chicago, IL 60614",
+                      "note": "Classic American restaurant",
+                      "coordinates": [41.9227, -87.6352]
+                    },
+                    {
+                      "id": 3,
+                      "time": "2:00 PM - 4:00 PM",
+                      "timeStart": 14,
+                      "timeEnd": 16,
+                      "activity": "Visit",
+                      "place": "Wrigley Field",
+                      "address": "1060 W Addison St, Chicago, IL 60613",
+                      "note": "Historic baseball stadium tour",
+                      "coordinates": [41.9484, -87.6553]
+                    },
+                    {
+                      "id": 4,
+                      "time": "4:30 PM - 6:00 PM",
+                      "timeStart": 16.5,
+                      "timeEnd": 18,
+                      "activity": "Explore",
+                      "place": "Wrigleyville",
+                      "address": "Wrigleyville, Chicago, IL 60613",
+                      "note": "Neighborhood around Wrigley Field",
+                      "coordinates": [41.9473, -87.6564]
+                    },
+                    {
+                      "id": 5,
+                      "time": "7:00 PM - 9:00 PM",
+                      "timeStart": 19,
+                      "timeEnd": 21,
+                      "activity": "Dinner",
+                      "place": "Smoke Daddy",
+                      "address": "3636 N Clark St, Chicago, IL 60613",
+                      "note": "BBQ and live music",
+                      "coordinates": [41.9483, -87.6600]
+                    }
+                  ]
+                },
+                {
+                  "id": 4,
+                  "title": "Day 4: Chicago Heights & Shopping",
+                  "color": "#ef4444",
+                  "mapView": {
+                    "lat": 41.8979,
+                    "lng": -87.6236,
+                    "zoom": 14
+                  },
+                  "activities": [
+                    {
+                      "id": 1,
+                      "time": "9:00 AM - 11:30 AM",
+                      "timeStart": 9,
+                      "timeEnd": 11.5,
+                      "activity": "Visit",
+                      "place": "Willis Tower Skydeck",
+                      "address": "233 S Wacker Dr, Chicago, IL 60606",
+                      "note": "Views from glass observation deck",
+                      "coordinates": [41.8789, -87.6359]
+                    },
+                    {
+                      "id": 2,
+                      "time": "12:00 PM - 2:30 PM",
+                      "timeStart": 12,
+                      "timeEnd": 14.5,
+                      "activity": "Shopping & Lunch",
+                      "place": "The Magnificent Mile",
+                      "address": "N Michigan Ave, Chicago, IL 60611",
+                      "note": "Upscale shopping district",
+                      "coordinates": [41.8933, -87.6241]
+                    },
+                    {
+                      "id": 3,
+                      "time": "3:00 PM - 5:00 PM",
+                      "timeStart": 15,
+                      "timeEnd": 17,
+                      "activity": "Visit",
+                      "place": "Chicago History Museum",
+                      "address": "1601 N Clark St, Chicago, IL 60614",
+                      "note": "Museum dedicated to Chicago's history",
+                      "coordinates": [41.9117, -87.6315]
+                    },
+                    {
+                      "id": 4,
+                      "time": "5:30 PM - 6:30 PM",
+                      "timeStart": 17.5,
+                      "timeEnd": 18.5,
+                      "activity": "Visit",
+                      "place": "Navy Pier",
+                      "address": "600 E Grand Ave, Chicago, IL 60611",
+                      "note": "Landmark pier on Lake Michigan",
+                      "coordinates": [41.8917, -87.6063]
+                    },
+                    {
+                      "id": 5,
+                      "time": "7:00 PM - 9:30 PM",
+                      "timeStart": 19,
+                      "timeEnd": 21.5,
+                      "activity": "Dinner",
+                      "place": "Portillo's",
+                      "address": "100 W Ontario St, Chicago, IL 60654",
+                      "note": "Chicago-style hot dogs and Italian beef",
+                      "coordinates": [41.8930, -87.6328]
+                    }
+                  ]
+                }
+              ],
+              "otherPlaces": [
+                {
+                  "id": 1,
+                  "activity": "Visit",
+                  "place": "Art Institute of Chicago",
+                  "address": "111 S Michigan Ave, Chicago, IL 60603",
+                  "note": "World-class art museum",
+                  "coordinates": [41.8796, -87.6237]
+                },
+                {
+                  "id": 2,
+                  "activity": "Visit",
+                  "place": "360 Chicago Observation Deck",
+                  "address": "875 N Michigan Ave, Chicago, IL 60611",
+                  "note": "Formerly John Hancock Observatory",
+                  "coordinates": [41.8989, -87.6232]
+                },
+                {
+                  "id": 3,
+                  "activity": "Explore",
+                  "place": "Chinatown",
+                  "address": "Chinatown, Chicago, IL 60616",
+                  "note": "Chinese cultural area south of downtown",
+                  "coordinates": [41.8527, -87.6320]
+                },
+                {
+                  "id": 4,
+                  "activity": "Visit",
+                  "place": "Adler Planetarium",
+                  "address": "1300 S Lake Shore Dr, Chicago, IL 60605",
+                  "note": "America's first planetarium",
+                  "coordinates": [41.8663, -87.6070]
+                },
+                {
+                  "id": 5,
+                  "activity": "Visit",
+                  "place": "Museum of Science and Industry",
+                  "address": "5700 S Lake Shore Dr, Chicago, IL 60637",
+                  "note": "Largest science museum in the Western Hemisphere",
+                  "coordinates": [41.7906, -87.5830]
+                }
+              ]
+            };
+            
+            return Promise.resolve(tripData);
+        }
+
+        async function initMap() {
             // Check if the map element exists
             const mapElement = document.getElementById('map');
             if (!mapElement) {
                 console.error('Map element not found');
+                return;
+            }
+
+            // Fetch trip data
+            tripData = await fetchTripData();
+            if (!tripData) {
+                console.error('Failed to load trip data');
                 return;
             }
 
@@ -158,123 +504,207 @@
                 return;
             }
 
-            // Day 1 Locations
-            const day1Coords = [
-                [41.8826, -87.6233], // Millennium Park
-                [41.8919, -87.6267], // Magnificent Mile
-                [41.8962, -87.6242], // Chicago 360
-                [41.8906, -87.6277]  // Giordano's
-            ];
+            // Create UI
+            createUI();
 
-            // Day 2 Locations
-            const day2Coords = [
-                [41.8789, -87.6350], // Skydeck
-                [41.8917, -87.6006], // Navy Pier
-                [41.9468, -87.7125], // Unique Thrift Store
-                [41.8840, -87.6486]  // Hanabusa Cafe
-            ];
+            // Initialize days for map
+            initializeDays();
 
-            // Day 3 Locations
-            const day3Coords = [
-                [41.9665, -87.7188], // Gangnam Market
-                [41.9651, -87.7234], // Ssyal Ginseng House
-                [41.7282, -87.6820], // Original Rainbow Cone
-                [41.9534, -87.7735], // Superdawg
-                [41.8875, -87.6314], // Chicago River
-                [41.9029, -87.6762]  // Jibaritos y Mas
-            ];
-
-            // Day 4 Locations
-            const day4Coords = [
-                [41.8843, -87.6538]  // Goodwill
-            ];
-            
-            // Create markers for each day
-            createDayMarkers(day1Coords, day1Markers, "Day 1", '#3b82f6');
-            createDayMarkers(day2Coords, day2Markers, "Day 2", '#10b981');
-            createDayMarkers(day3Coords, day3Markers, "Day 3", '#f59e0b');
-            createDayMarkers(day4Coords, day4Markers, "Day 4", '#ef4444');
-            
-            // Add Chicago River separately
-            addMarkerToChicagoRiver(day3Markers, '#f59e0b');
-            
-            // Create simplified route lines
-            createSimpleRoutes(day1Coords, day2Coords, day3Coords, day4Coords);
-
-            //Initial map setup
-            showDay1Locations();
+            // Set up day 1 as default view
+            showDayLocations(1);
         }
 
-        // Function to create markers for a day
-        function createDayMarkers(coords, markers, dayLabel, color) {
-            coords.forEach((coord, index) => {
-                // Skip Chicago River as it's added separately
-                if (dayLabel === "Day 3" && index === 4) return;
+        function createUI() {
+            // Set page title
+            document.title = tripData.tripTitle;
+            document.querySelector('.page-title').textContent = tripData.tripTitle;
+            
+            // Create day buttons
+            const buttonContainer = document.querySelector('.button-container');
+            buttonContainer.innerHTML = '';
+            
+            tripData.days.forEach(day => {
+                const button = document.createElement('button');
+                button.onclick = function() { showDayLocations(day.id); };
+                button.className = `day-button day-${day.id} ${day.id === 1 ? 'active' : ''}`;
+                button.textContent = day.title;
+                buttonContainer.appendChild(button);
+            });
+
+            // Create day cards and tables
+            const container = document.querySelector('.days-container');
+            container.innerHTML = '';
+            
+            tripData.days.forEach(day => {
+                // Create day card
+                createDayCard(day, container);
+            });
+
+            // Create other places card
+            createOtherPlacesCard();
+
+            // Create the Kanban board
+            createKanbanView();
+
+            // Create the Gantt chart
+            createGanttChart();
+        }
+
+        function createDayCard(day, container) {
+            const dayCard = document.createElement('div');
+            dayCard.className = `day-card day-${day.id}`;
+            
+            const dayTitle = document.createElement('h2');
+            dayTitle.className = 'day-title';
+            dayTitle.textContent = day.title;
+            
+            const tableContainer = document.createElement('div');
+            tableContainer.className = 'table-container';
+            
+            const table = document.createElement('table');
+            table.className = 'itinerary-table';
+            
+            // Create table header
+            const thead = document.createElement('thead');
+            thead.innerHTML = `
+                <tr>
+                    <th class="number-col">#</th>
+                    <th class="time-col">Time</th>
+                    <th class="activity-col">Activity</th>
+                    <th class="place-col">Place</th>
+                    <th class="address-col">Address</th>
+                    <th class="note-col">Note</th>
+                </tr>
+            `;
+            
+            // Create table body
+            const tbody = document.createElement('tbody');
+            day.activities.forEach(activity => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${activity.id}</td>
+                    <td>${activity.time}</td>
+                    <td>${activity.activity}</td>
+                    <td>${activity.place}</td>
+                    <td>${activity.address}</td>
+                    <td>${activity.note}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            table.appendChild(thead);
+            table.appendChild(tbody);
+            tableContainer.appendChild(table);
+            dayCard.appendChild(dayTitle);
+            dayCard.appendChild(tableContainer);
+            container.appendChild(dayCard);
+        }
+
+        function createOtherPlacesCard() {
+            const container = document.querySelector('.additional-container');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            const otherPlacesCard = document.createElement('div');
+            otherPlacesCard.className = 'day-card other-places';
+            
+            const cardTitle = document.createElement('h2');
+            cardTitle.className = 'day-title';
+            cardTitle.textContent = 'Other Places of Interest in Chicago';
+            
+            const tableContainer = document.createElement('div');
+            tableContainer.className = 'table-container';
+            
+            const table = document.createElement('table');
+            table.className = 'itinerary-table';
+            
+            // Create table header
+            const thead = document.createElement('thead');
+            thead.innerHTML = `
+                <tr>
+                    <th class="number-col">#</th>
+                    <th class="activity-col">Suggested Activity</th>
+                    <th class="place-col">Place</th>
+                    <th class="address-col">Address</th>
+                    <th class="note-col">Note</th>
+                </tr>
+            `;
+            
+            // Create table body
+            const tbody = document.createElement('tbody');
+            tripData.otherPlaces.forEach(place => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${place.id}</td>
+                    <td>${place.activity}</td>
+                    <td>${place.place}</td>
+                    <td>${place.address}</td>
+                    <td>${place.note}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            table.appendChild(thead);
+            table.appendChild(tbody);
+            tableContainer.appendChild(table);
+            otherPlacesCard.appendChild(cardTitle);
+            otherPlacesCard.appendChild(tableContainer);
+            container.appendChild(otherPlacesCard);
+        }
+
+        function initializeDays() {
+            // Initialize markers and routes for each day
+            tripData.days.forEach(day => {
+                // Initialize markers array for this day
+                dayMarkers[day.id] = [];
                 
-                // Get proper title based on day and index
-                let title;
-                if (dayLabel === "Day 1") {
-                    title = ["Millennium Park", "Magnificent Mile", "Chicago 360", "Giordano's"][index];
-                } else if (dayLabel === "Day 2") {
-                    title = ["Skydeck", "Navy Pier", "Unique Thrift Store", "Hanabusa Cafe"][index];
-                } else if (dayLabel === "Day 3") {
-                    title = ["Gangnam Market", "Ssyal Ginseng House", "Original Rainbow Cone", "Superdawg", "", "Jibaritos y Mas"][index];
-                } else {
-                    title = ["Goodwill"][index];
+                // Get coordinates for this day's activities
+                const dayCoords = day.activities.map(activity => activity.coordinates);
+                
+                // Create markers for this day
+                createDayMarkers(dayCoords, dayMarkers[day.id], `Day ${day.id}`, day.color, day.activities);
+                
+                // Check for Chicago River special case
+                const riverActivity = day.activities.find(a => a.isRiver);
+                if (riverActivity) {
+                    addMarkerToChicagoRiver(dayMarkers[day.id], day.color, riverActivity);
                 }
+                
+                // Create routes for this day
+                createSimpleRoutes(dayCoords, day.id, day.color);
+            });
+        }
+
+        function createDayMarkers(coords, markersArray, dayLabel, color, activities) {
+            coords.forEach((coord, index) => {
+                // Check if this is a river activity (to skip regular marker)
+                if (activities && activities[index].isRiver) return;
                 
                 // Add row number instead of day number
                 const rowNumber = index + 1;
-                addMarker(coord[0], coord[1], title, dayLabel, markers, color, rowNumber);
+                const activity = activities ? activities[index] : null;
+                const title = activity ? activity.place : `Location ${index + 1}`;
+                
+                addMarker(coord[0], coord[1], title, dayLabel, markersArray, color, rowNumber);
             });
         }
         
         // Create simple straight-line routes
-        function createSimpleRoutes(day1Coords, day2Coords, day3Coords, day4Coords) {
-            // Create Day 1 route
-            day1Route = L.polyline(day1Coords, {
-                color: '#3b82f6',
+        function createSimpleRoutes(coords, dayId, color) {
+            if (coords.length < 2) return; // Need at least 2 points for a route
+            
+            // Create Day route polyline
+            const route = L.polyline(coords, {
+                color: color,
                 weight: 3,
                 opacity: 0.7,
                 dashArray: '8, 8',
                 lineJoin: 'round'
             });
             
-            // Create Day 2 route
-            day2Route = L.polyline(day2Coords, {
-                color: '#10b981',
-                weight: 3,
-                opacity: 0.7,
-                dashArray: '8, 8',
-                lineJoin: 'round'
-            });
-            
-            // For Day 3, handle Chicago River separately
-            const day3CoordsWithoutRiver = [
-                day3Coords[0], // Gangnam Market
-                day3Coords[1], // Ssyal Ginseng House
-                day3Coords[2], // Original Rainbow Cone
-                day3Coords[3], // Superdawg
-                day3Coords[4], // Chicago River
-                day3Coords[5]  // Jibaritos y Mas
-            ];
-            
-            day3Route = L.polyline(day3CoordsWithoutRiver, {
-                color: '#f59e0b',
-                weight: 3,
-                opacity: 0.7,
-                dashArray: '8, 8',
-                lineJoin: 'round'
-            });
-            
-            // Day 4 only has one location, so no meaningful route
-            day4Route = L.polyline(day4Coords, {
-                color: '#ef4444',
-                weight: 3,
-                opacity: 0.7,
-                dashArray: '8, 8',
-                lineJoin: 'round'
-            });
+            // Store the route
+            dayRoutes[dayId] = route;
         }
 
         function createMarkerIcon(color, text) {
@@ -286,7 +716,7 @@
             });
         }
 
-        function addMarker(lat, lng, title, day, dayMarkers, color, rowNumber) {
+        function addMarker(lat, lng, title, day, markersArray, color, rowNumber) {
             try {
                 // Use row number instead of day number
                 const marker = L.marker([lat, lng], {
@@ -294,35 +724,30 @@
                     title: title
                 }).addTo(map).bindPopup(`<b>${title}</b><br>${day} - Stop #${rowNumber}`);
                 
-                dayMarkers.push(marker);
+                markersArray.push(marker);
             } catch(error) {
                 console.error("Error adding marker", error);
             }
         }
 
-        function addMarkerToChicagoRiver(dayMarkers, color) {
-            const chicagoRiverCoordinates = [
-                [41.8875, -87.6314],
-                [41.8850, -87.6290],
-                [41.8860, -87.6270],
-                [41.8880, -87.6330]
-            ];
+        function addMarkerToChicagoRiver(markersArray, color, riverActivity) {
+            const riverCoordinates = riverActivity.riverCoordinates;
 
             // Create polyline
-            chicagoRiverPolyline = L.polyline(chicagoRiverCoordinates, {
+            chicagoRiverPolyline = L.polyline(riverCoordinates, {
                 color: '#3498db',
                 weight: 4,
                 opacity: 0.7,
                 lineJoin: 'round'
             }).addTo(map);
             
-            // Add a marker at the start of the river - use row number 5 for day 3
-            const marker = L.marker(chicagoRiverCoordinates[0], {
-                icon: createMarkerIcon('#2980b9', '5'),
+            // Add a marker at the start of the river
+            const marker = L.marker(riverCoordinates[0], {
+                icon: createMarkerIcon('#2980b9', riverActivity.id.toString()),
                 title: "Chicago River"
-            }).addTo(map).bindPopup("<b>Chicago River</b><br>Architecture Boat Tour - Stop #5");
+            }).addTo(map).bindPopup(`<b>${riverActivity.place}</b><br>${riverActivity.activity} - Stop #${riverActivity.id}`);
             
-            dayMarkers.push(marker);
+            markersArray.push(marker);
         }
 
         function clearMarkers(markers) {
@@ -331,140 +756,174 @@
             });
         }
 
-        function showDay1Locations() {
+        function showDayLocations(dayId) {
+            // Find the day data
+            const day = tripData.days.find(d => d.id === dayId);
+            if (!day) return;
+
             // Clear all markers
-            clearMarkers(day2Markers);
-            clearMarkers(day3Markers);
-            clearMarkers(day4Markers);
+            Object.values(dayMarkers).forEach(markers => clearMarkers(markers));
             
             // Remove river polyline
-            if (chicagoRiverPolyline) {
+            if (chicagoRiverPolyline && map.hasLayer(chicagoRiverPolyline)) {
                 map.removeLayer(chicagoRiverPolyline);
             }
             
             // Remove all routes
             clearAllRoutes();
             
-            // Add day 1 markers and route
-            day1Markers.forEach(marker => {
+            // Add this day's markers
+            dayMarkers[dayId].forEach(marker => {
                 if (!map.hasLayer(marker)) {
                     marker.addTo(map);
                 }
             });
             
-            day1Route.addTo(map);
-            
-            // Set view to day 1 locations
-            map.setView([41.8900, -87.6250], 14);
-            
-            // Highlight active button
-            document.querySelectorAll('.day-button').forEach(btn => btn.classList.remove('active'));
-            document.querySelector('.day-1').classList.add('active');
-        }
-
-        function showDay2Locations() {
-            // Clear all markers
-            clearMarkers(day1Markers);
-            clearMarkers(day3Markers);
-            clearMarkers(day4Markers);
-            
-            // Remove river polyline
-            if (chicagoRiverPolyline) {
-                map.removeLayer(chicagoRiverPolyline);
+            // Add this day's route
+            if (dayRoutes[dayId]) {
+                dayRoutes[dayId].addTo(map);
             }
             
-            // Remove all routes
-            clearAllRoutes();
-            
-            // Add day 2 markers and route
-            day2Markers.forEach(marker => {
-                if (!map.hasLayer(marker)) {
-                    marker.addTo(map);
-                }
-            });
-            
-            day2Route.addTo(map);
-            
-            // Set view to day 2 locations
-            map.setView([41.9000, -87.6500], 12);
-            
-            // Highlight active button
-            document.querySelectorAll('.day-button').forEach(btn => btn.classList.remove('active'));
-            document.querySelector('.day-2').classList.add('active');
-        }
-
-        function showDay3Locations() {
-            // Clear all markers
-            clearMarkers(day1Markers);
-            clearMarkers(day2Markers);
-            clearMarkers(day4Markers);
-            
-            // Remove all routes
-            clearAllRoutes();
-            
-            // Add day 3 markers and route
-            day3Markers.forEach(marker => {
-                if (!map.hasLayer(marker)) {
-                    marker.addTo(map);
-                }
-            });
-            
-            day3Route.addTo(map);
-            
-            // Re-add the Chicago River polyline
-            if (chicagoRiverPolyline && !map.hasLayer(chicagoRiverPolyline)) {
+            // Check if this day has the Chicago River and re-add it
+            const riverActivity = day.activities.find(a => a.isRiver);
+            if (riverActivity && chicagoRiverPolyline && !map.hasLayer(chicagoRiverPolyline)) {
                 chicagoRiverPolyline.addTo(map);
             }
             
-            // Set view to day 3 locations
-            map.setView([41.9200, -87.7000], 11);
+            // Set map view to this day's focus
+            map.setView([day.mapView.lat, day.mapView.lng], day.mapView.zoom);
             
             // Highlight active button
             document.querySelectorAll('.day-button').forEach(btn => btn.classList.remove('active'));
-            document.querySelector('.day-3').classList.add('active');
-        }
-
-        function showDay4Locations() {
-            // Clear all markers
-            clearMarkers(day1Markers);
-            clearMarkers(day2Markers);
-            clearMarkers(day3Markers);
-            
-            // Remove river polyline
-            if (chicagoRiverPolyline) {
-                map.removeLayer(chicagoRiverPolyline);
-            }
-            
-            // Remove all routes
-            clearAllRoutes();
-            
-            // Add day 4 markers
-            day4Markers.forEach(marker => {
-                if (!map.hasLayer(marker)) {
-                    marker.addTo(map);
-                }
-            });
-            
-            // Day 4 only has one location, so no meaningful route
-            
-            // Set view to day 4 locations
-            map.setView([41.8843, -87.6538], 15);
-            
-            // Highlight active button
-            document.querySelectorAll('.day-button').forEach(btn => btn.classList.remove('active'));
-            document.querySelector('.day-4').classList.add('active');
+            document.querySelector(`.day-${dayId}`).classList.add('active');
         }
         
         // Function to clear all routes
         function clearAllRoutes() {
-            if (day1Route && map.hasLayer(day1Route)) map.removeLayer(day1Route);
-            if (day2Route && map.hasLayer(day2Route)) map.removeLayer(day2Route);
-            if (day3Route && map.hasLayer(day3Route)) map.removeLayer(day3Route);
-            if (day4Route && map.hasLayer(day4Route)) map.removeLayer(day4Route);
+            Object.values(dayRoutes).forEach(route => {
+                if (map.hasLayer(route)) map.removeLayer(route);
+            });
         }
         
-        // Initialize the map when the page loads
+        // Initialize when DOM is ready
         document.addEventListener('DOMContentLoaded', initMap);
+
+        // Helper function to create Kanban view
+        function createKanbanView() {
+            const kanbanBoard = document.getElementById('kanban-board');
+            if (!kanbanBoard) return;
+            
+            kanbanBoard.innerHTML = '';
+            
+            // Create columns for each day
+            tripData.days.forEach(day => {
+                const column = document.createElement('div');
+                column.className = 'kanban-column';
+                
+                const columnTitle = document.createElement('h3');
+                columnTitle.className = `kanban-column-title day-${day.id}-title`;
+                columnTitle.textContent = day.title.split(':')[0];
+                
+                column.appendChild(columnTitle);
+                
+                // Add cards for each activity
+                day.activities.forEach(activity => {
+                    const card = document.createElement('div');
+                    card.className = 'kanban-card';
+                    
+                    const timeDiv = document.createElement('div');
+                    timeDiv.className = 'kanban-time';
+                    timeDiv.textContent = activity.time;
+                    
+                    const activityDiv = document.createElement('div');
+                    activityDiv.className = 'kanban-activity';
+                    activityDiv.textContent = activity.activity;
+                    
+                    const placeDiv = document.createElement('div');
+                    placeDiv.className = 'kanban-place';
+                    placeDiv.textContent = activity.place;
+                    
+                    card.appendChild(timeDiv);
+                    card.appendChild(activityDiv);
+                    card.appendChild(placeDiv);
+                    
+                    column.appendChild(card);
+                });
+                
+                kanbanBoard.appendChild(column);
+            });
+        }
+
+        // Helper function to create Gantt chart
+        function createGanttChart() {
+            const ganttContainer = document.getElementById('gantt-container');
+            if (!ganttContainer) return;
+            
+            ganttContainer.innerHTML = '';
+            
+            // Create header with time markers
+            const header = document.createElement('div');
+            header.className = 'gantt-header';
+            
+            const headerLabel = document.createElement('div');
+            headerLabel.className = 'gantt-header-label';
+            
+            const timeline = document.createElement('div');
+            timeline.className = 'gantt-timeline';
+            
+            // Create time markers (9am to 10pm)
+            for (let hour = 9; hour <= 22; hour++) {
+                const marker = document.createElement('div');
+                marker.className = 'gantt-time-marker';
+                marker.textContent = hour <= 12 ? `${hour}am` : `${hour-12}pm`;
+                timeline.appendChild(marker);
+            }
+            
+            header.appendChild(headerLabel);
+            header.appendChild(timeline);
+            ganttContainer.appendChild(header);
+            
+            // Create rows for each day
+            tripData.days.forEach(day => {
+                const row = document.createElement('div');
+                row.className = 'gantt-row';
+                
+                const rowLabel = document.createElement('div');
+                rowLabel.className = `gantt-row-label day-${day.id}-label`;
+                rowLabel.textContent = `Day ${day.id}`;
+                
+                const rowTimeline = document.createElement('div');
+                rowTimeline.className = 'gantt-timeline';
+                
+                // Create activity bars
+                day.activities.forEach(activity => {
+                    // Calculate position and width based on time
+                    // Assuming 9am (9) to 10pm (22) = 0% to 100% of timeline width
+                    const timelineStart = 9;  // 9am
+                    const timelineEnd = 22;   // 10pm
+                    const timelineRange = timelineEnd - timelineStart;
+                    
+                    const left = ((activity.timeStart - timelineStart) / timelineRange) * 100;
+                    const width = ((activity.timeEnd - activity.timeStart) / timelineRange) * 100;
+                    
+                    const bar = document.createElement('div');
+                    bar.className = `gantt-bar day-${day.id}-bar`;
+                    bar.style.left = `${left}%`;
+                    bar.style.width = `${width}%`;
+                    bar.title = `${activity.place}: ${activity.time}`;
+                    
+                    const barText = document.createElement('span');
+                    barText.textContent = activity.place.split(' ')[0];  // First word of place
+                    
+                    bar.appendChild(barText);
+                    rowTimeline.appendChild(bar);
+                });
+                
+                row.appendChild(rowLabel);
+                row.appendChild(rowTimeline);
+                ganttContainer.appendChild(row);
+            });
+        }
     </script>
 </head>
 <body class="bg-gray-100">
@@ -473,450 +932,24 @@
 
         <div id="map" class="map-container"></div>
         <div class="button-container">
-            <button onclick="showDay1Locations()" class="day-button day-1 active">Day 1: Sunday, April 13th</button>
-            <button onclick="showDay2Locations()" class="day-button day-2">Day 2: Monday, April 14th</button>
-            <button onclick="showDay3Locations()" class="day-button day-3">Day 3: Tuesday, April 15th</button>
-            <button onclick="showDay4Locations()" class="day-button day-4">Day 4: Wednesday, April 16th</button>
+            <!-- Day buttons will be dynamically generated -->
         </div>
 
-        <div class="day-card day-1">
-            <h2 class="day-title">Day 1: Sunday, April 13th</h2>
-            <div class="table-container">
-                <table class="itinerary-table">
-                    <thead>
-                        <tr>
-                            <th class="number-col">#</th>
-                            <th class="time-col">Time</th>
-                            <th class="activity-col">Activity</th>
-                            <th class="place-col">Place</th>
-                            <th class="address-col">Address</th>
-                            <th class="note-col">Note</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>2:00 - 4:00 pm</td>
-                            <td>Arrival in Chicago</td>
-                            <td>Millennium Park</td>
-                            <td>201 E Randolph St</td>
-                            <td>Explore area ~2 hours</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>4:00 - 5:30 pm</td>
-                            <td>Walk & Shop</td>
-                            <td>Magnificent Mile</td>
-                            <td>North Michigan Avenue</td>
-                            <td>Walk & window shopping ~1.5 hours</td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>5:30 - 8:00 pm</td>
-                            <td>Move to Sunset location</td>
-                            <td>Chicago 360</td>
-                            <td>875 N Michigan Ave</td>
-                            <td>Arrive by ~6:00 pm for sunset at 7:30 pm</td>
-                        </tr>
-                        <tr>
-                            <td>4</td>
-                            <td>8:00 - 9:30 pm</td>
-                            <td>Dinner nearby</td>
-                            <td>Giordano's Deep-Dish Pizza</td>
-                            <td>730 N Rush St</td>
-                            <td>Enjoy deep-dish pizza ~1.5 hours</td>
-                        </tr>
-                        <tr>
-                            <td>5</td>
-                            <td>9:30 - 10:00 pm</td>
-                            <td>Hotel check-in</td>
-                            <td>Your Hotel</td>
-                            <td>Check-in by ~10 pm</td>
-                            <td>Relax & rest</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="day-card day-2">
-            <h2 class="day-title">Day 2: Monday, April 14th</h2>
-            <div class="table-container">
-                <table class="itinerary-table">
-                    <thead>
-                        <tr>
-                            <th class="number-col">#</th>
-                            <th class="time-col">Time</th>
-                            <th class="activity-col">Activity</th>
-                            <th class="place-col">Place</th>
-                            <th class="address-col">Address</th>
-                            <th class="note-col">Note</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>9:00 - 10:30 am</td>
-                            <td>Visit Skydeck (Daytime)</td>
-                            <td>Skydeck at Willis Tower</td>
-                            <td>233 S Wacker Dr</td>
-                            <td>Thrill experience ~1.5 hours</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>10:30 - 1:00 pm</td>
-                            <td>Explore & Lunch</td>
-                            <td>Navy Pier</td>
-                            <td>600 E Grand Ave</td>
-                            <td>Lunch & sightseeing ~2.5 hours</td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>1:00 - 2:00 pm</td>
-                            <td>Thrifting</td>
-                            <td>Unique Thrift Store</td>
-                            <td>3748 N Elston Ave</td>
-                            <td>Shopping time ~1 hour</td>
-                        </tr>
-                        <tr>
-                            <td>4</td>
-                            <td>2:30 - 3:30 pm</td>
-                            <td>Visit cafe for dessert</td>
-                            <td>Hanabusa Cafe</td>
-                            <td>942 W Randolph St</td>
-                            <td>Dessert time ~1 hour</td>
-                        </tr>
-                        <tr>
-                            <td>5</td>
-                            <td>3:30 - 5:00 pm</td>
-                            <td>Short break at hotel</td>
-                            <td>Your Hotel</td>
-                            <td>Break/rest ~1.5 hours</td>
-                            <td>Prepare for evening</td>
-                        </tr>
-                        <tr>
-                            <td>6</td>
-                            <td>5:00 - 8:00 pm</td>
-                            <td>Transit to meet friend</td>
-                            <td>Meeting friend</td>
-                            <td>Location as planned</td>
-                            <td>Evening with friend ~3 hours</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="day-card day-3">
-            <h2 class="day-title">Day 3: Tuesday, April 15th</h2>
-            <div class="table-container">
-                <table class="itinerary-table">
-                    <thead>
-                        <tr>
-                            <th class="number-col">#</th>
-                            <th class="time-col">Time</th>
-                            <th class="activity-col">Activity</th>
-                            <th class="place-col">Place</th>
-                            <th class="address-col">Address</th>
-                            <th class="note-col">Note</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>9:00 - 10:00 am</td>
-                            <td>Shopping for Korean groceries</td>
-                            <td>Gangnam Market</td>
-                            <td>4005 W Lawrence Ave</td>
-                            <td>Shopping ~1 hour</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>10:30 - 12:00 pm</td>
-                            <td>Visit nearby Korean restaurant</td>
-                            <td>Ssyal Ginseng House</td>
-                            <td>4201 W Lawrence Ave</td>
-                            <td>Early lunch ~1.5 hours</td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>12:30 - 1:30 pm</td>
-                            <td>Try local dessert</td>
-                            <td>Original Rainbow Cone</td>
-                            <td>9233 S Western Ave</td>
-                            <td>Dessert & sightseeing ~1 hour</td>
-                        </tr>
-                        <tr>
-                            <td>4</td>
-                            <td>2:00 - 3:00 pm</td>
-                            <td>Explore and snack</td>
-                            <td>Superdawg</td>
-                            <td>6300 N Milwaukee Ave</td>
-                            <td>Snack break ~1 hour</td>
-                        </tr>
-                        <tr>
-                            <td>5</td>
-                            <td>3:30 - 5:30 pm</td>
-                            <td>Short rest at hotel</td>
-                            <td>Your Hotel</td>
-                            <td>Rest & refresh ~2 hours</td>
-                            <td>Prepare for evening</td>
-                        </tr>
-                        <tr>
-                            <td>6</td>
-                            <td>5:30 - 7:30 pm</td>
-                            <td>CAC Architecture Boat Cruise</td>
-                            <td>Chicago River</td>
-                            <td>Meeting point per booking</td>
-                            <td>Arrive 6:00 pm for sunset cruise</td>
-                        </tr>
-                        <tr>
-                            <td>7</td>
-                            <td>8:00 - 9:00 pm</td>
-                            <td>Dinner - Puerto Rican sandwich</td>
-                            <td>Jibaritos y Mas</td>
-                            <td>2603 W Division St</td>
-                            <td>Dinner ~1 hour</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="day-card day-4">
-            <h2 class="day-title">Day 4: Wednesday, April 16th</h2>
-            <div class="table-container">
-                <table class="itinerary-table">
-                    <thead>
-                        <tr>
-                            <th class="number-col">#</th>
-                            <th class="time-col">Time</th>
-                            <th class="activity-col">Activity</th>
-                            <th class="place-col">Place</th>
-                            <th class="address-col">Address</th>
-                            <th class="note-col">Note</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>9:00 - 10:00 am</td>
-                            <td>Final Shopping/Thrifting</td>
-                            <td>Goodwill</td>
-                            <td>1201 W Washington Blvd</td>
-                            <td>Shopping ~1 hour</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>10:30 - 11:30 am</td>
-                            <td>Return to hotel, checkout</td>
-                            <td>Your Hotel</td>
-                            <td>Checkout & head to airport</td>
-                            <td>Checkout & head to airport ~11:30 am</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="days-container">
+            <!-- Day cards will be dynamically generated -->
         </div>
     </div>
 
-    <div class="container">
-        <div class="day-card other-places">
-            <h2 class="day-title">Other Places of Interest in Chicago</h2>
-            <div class="table-container">
-                <table class="itinerary-table">
-                    <thead>
-                        <tr>
-                            <th class="number-col">#</th>
-                            <th class="activity-col">Suggested Activity</th>
-                            <th class="place-col">Place</th>
-                            <th class="address-col">Address</th>
-                            <th class="note-col">Note</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Art & Culture Tour</td>
-                            <td>Art Institute of Chicago</td>
-                            <td>111 S Michigan Ave</td>
-                            <td>World-class art museum, near Millennium Park</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>Natural History Exploration</td>
-                            <td>Field Museum</td>
-                            <td>1400 S Lake Shore Dr</td>
-                            <td>Natural history museum with famous T-Rex "Sue"</td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>Marine Life Experience</td>
-                            <td>Shedd Aquarium</td>
-                            <td>1200 S Lake Shore Dr</td>
-                            <td>Impressive aquarium with over 32,000 animals</td>
-                        </tr>
-                        <tr>
-                            <td>4</td>
-                            <td>Wildlife Viewing</td>
-                            <td>Lincoln Park Zoo</td>
-                            <td>2001 N Clark St</td>
-                            <td>Free zoo with over 200 species</td>
-                        </tr>
-                        <tr>
-                            <td>5</td>
-                            <td>Ballpark Tour or Game</td>
-                            <td>Wrigley Field</td>
-                            <td>1060 W Addison St</td>
-                            <td>Historic baseball stadium, home of the Cubs</td>
-                        </tr>
-                        <tr>
-                            <td>6</td>
-                            <td>Comedy Show</td>
-                            <td>The Second City</td>
-                            <td>1616 N Wells St</td>
-                            <td>Famous comedy club that launched many careers</td>
-                        </tr>
-                        <tr>
-                            <td>7</td>
-                            <td>Interactive Exhibits</td>
-                            <td>Museum of Science and Industry</td>
-                            <td>5700 S Lake Shore Dr</td>
-                            <td>Largest science museum in the Western Hemisphere</td>
-                        </tr>
-                        <tr>
-                            <td>8</td>
-                            <td>Fountain Visit & Relaxation</td>
-                            <td>Grant Park</td>
-                            <td>337 E Randolph St</td>
-                            <td>Large urban park with Buckingham Fountain</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            </div>
-        </div>
+    <div class="container additional-container">
+        <!-- Other places section will be dynamically generated -->
+    </div>
 
     <div class="container">
         <div class="day-card kanban-view">
             <h2 class="day-title">Timeline View (Kanban Style)</h2>
             <div class="kanban-container">
-                <div class="kanban-board">
-                    <div class="kanban-column">
-                        <h3 class="kanban-column-title day-1-title">Day 1: Sunday</h3>
-                        <div class="kanban-card">
-                            <div class="kanban-time">2:00 - 4:00 pm</div>
-                            <div class="kanban-activity">Arrival in Chicago</div>
-                            <div class="kanban-place">Millennium Park</div>
-                        </div>
-                        <div class="kanban-card">
-                            <div class="kanban-time">4:00 - 5:30 pm</div>
-                            <div class="kanban-activity">Walk & Shop</div>
-                            <div class="kanban-place">Magnificent Mile</div>
-                        </div>
-                        <div class="kanban-card">
-                            <div class="kanban-time">5:30 - 8:00 pm</div>
-                            <div class="kanban-activity">Move to Sunset location</div>
-                            <div class="kanban-place">Chicago 360</div>
-                        </div>
-                        <div class="kanban-card">
-                            <div class="kanban-time">8:00 - 9:30 pm</div>
-                            <div class="kanban-activity">Dinner nearby</div>
-                            <div class="kanban-place">Giordano's Pizza</div>
-                        </div>
-                        <div class="kanban-card">
-                            <div class="kanban-time">9:30 - 10:00 pm</div>
-                            <div class="kanban-activity">Hotel check-in</div>
-                            <div class="kanban-place">Your Hotel</div>
-            </div>
-        </div>
-
-                    <div class="kanban-column">
-                        <h3 class="kanban-column-title day-2-title">Day 2: Monday</h3>
-                        <div class="kanban-card">
-                            <div class="kanban-time">9:00 - 10:30 am</div>
-                            <div class="kanban-activity">Visit Skydeck</div>
-                            <div class="kanban-place">Willis Tower</div>
-            </div>
-                        <div class="kanban-card">
-                            <div class="kanban-time">10:30 - 1:00 pm</div>
-                            <div class="kanban-activity">Explore & Lunch</div>
-                            <div class="kanban-place">Navy Pier</div>
-        </div>
-                        <div class="kanban-card">
-                            <div class="kanban-time">1:00 - 2:00 pm</div>
-                            <div class="kanban-activity">Thrifting</div>
-                            <div class="kanban-place">Unique Thrift Store</div>
-    </div>
-                        <div class="kanban-card">
-                            <div class="kanban-time">2:30 - 3:30 pm</div>
-                            <div class="kanban-activity">Visit cafe for dessert</div>
-                            <div class="kanban-place">Hanabusa Cafe</div>
-                        </div>
-                        <div class="kanban-card">
-                            <div class="kanban-time">3:30 - 5:00 pm</div>
-                            <div class="kanban-activity">Short break</div>
-                            <div class="kanban-place">Your Hotel</div>
-                        </div>
-                        <div class="kanban-card">
-                            <div class="kanban-time">5:00 - 8:00 pm</div>
-                            <div class="kanban-activity">Transit to meet friend</div>
-                            <div class="kanban-place">Location as planned</div>
-                        </div>
-                    </div>
-                    
-                    <div class="kanban-column">
-                        <h3 class="kanban-column-title day-3-title">Day 3: Tuesday</h3>
-                        <div class="kanban-card">
-                            <div class="kanban-time">9:00 - 10:00 am</div>
-                            <div class="kanban-activity">Korean groceries</div>
-                            <div class="kanban-place">Gangnam Market</div>
-                        </div>
-                        <div class="kanban-card">
-                            <div class="kanban-time">10:30 - 12:00 pm</div>
-                            <div class="kanban-activity">Korean restaurant</div>
-                            <div class="kanban-place">Ssyal Ginseng House</div>
-                        </div>
-                        <div class="kanban-card">
-                            <div class="kanban-time">12:30 - 1:30 pm</div>
-                            <div class="kanban-activity">Local dessert</div>
-                            <div class="kanban-place">Rainbow Cone</div>
-                        </div>
-                        <div class="kanban-card">
-                            <div class="kanban-time">2:00 - 3:00 pm</div>
-                            <div class="kanban-activity">Explore and snack</div>
-                            <div class="kanban-place">Superdawg</div>
-                        </div>
-                        <div class="kanban-card">
-                            <div class="kanban-time">3:30 - 5:30 pm</div>
-                            <div class="kanban-activity">Rest at hotel</div>
-                            <div class="kanban-place">Your Hotel</div>
-                        </div>
-                        <div class="kanban-card">
-                            <div class="kanban-time">5:30 - 7:30 pm</div>
-                            <div class="kanban-activity">Architecture Cruise</div>
-                            <div class="kanban-place">Chicago River</div>
-                        </div>
-                        <div class="kanban-card">
-                            <div class="kanban-time">8:00 - 9:00 pm</div>
-                            <div class="kanban-activity">Dinner</div>
-                            <div class="kanban-place">Jibaritos y Mas</div>
-                        </div>
-                    </div>
-                    
-                    <div class="kanban-column">
-                        <h3 class="kanban-column-title day-4-title">Day 4: Wednesday</h3>
-                        <div class="kanban-card">
-                            <div class="kanban-time">9:00 - 10:00 am</div>
-                            <div class="kanban-activity">Final Shopping</div>
-                            <div class="kanban-place">Goodwill</div>
-                        </div>
-                        <div class="kanban-card">
-                            <div class="kanban-time">10:30 - 11:30 am</div>
-                            <div class="kanban-activity">Hotel checkout</div>
-                            <div class="kanban-place">Your Hotel</div>
-                        </div>
-                    </div>
+                <div class="kanban-board" id="kanban-board">
+                    <!-- Kanban columns will be dynamically generated -->
                 </div>
             </div>
         </div>
@@ -925,114 +958,8 @@
     <div class="container">
         <div class="day-card gantt-view">
             <h2 class="day-title">Gantt Chart View</h2>
-            <div class="gantt-container">
-                <div class="gantt-header">
-                    <div class="gantt-header-label"></div>
-                    <div class="gantt-timeline">
-                        <div class="gantt-time-marker">9am</div>
-                        <div class="gantt-time-marker">10am</div>
-                        <div class="gantt-time-marker">11am</div>
-                        <div class="gantt-time-marker">12pm</div>
-                        <div class="gantt-time-marker">1pm</div>
-                        <div class="gantt-time-marker">2pm</div>
-                        <div class="gantt-time-marker">3pm</div>
-                        <div class="gantt-time-marker">4pm</div>
-                        <div class="gantt-time-marker">5pm</div>
-                        <div class="gantt-time-marker">6pm</div>
-                        <div class="gantt-time-marker">7pm</div>
-                        <div class="gantt-time-marker">8pm</div>
-                        <div class="gantt-time-marker">9pm</div>
-                        <div class="gantt-time-marker">10pm</div>
-                    </div>
-                </div>
-                
-                <!-- Day 1 -->
-                <div class="gantt-row">
-                    <div class="gantt-row-label day-1-label">Day 1</div>
-                    <div class="gantt-timeline">
-                        <div class="gantt-bar day-1-bar" style="left: 33.3%; width: 16.7%;" title="Millennium Park: 2:00 - 4:00 pm">
-                            <span>Millennium Park</span>
-                        </div>
-                        <div class="gantt-bar day-1-bar" style="left: 50%; width: 12.5%;" title="Magnificent Mile: 4:00 - 5:30 pm">
-                            <span>Magnificent Mile</span>
-                        </div>
-                        <div class="gantt-bar day-1-bar" style="left: 62.5%; width: 20.8%;" title="Chicago 360: 5:30 - 8:00 pm">
-                            <span>Chicago 360</span>
-                        </div>
-                        <div class="gantt-bar day-1-bar" style="left: 83.3%; width: 12.5%;" title="Giordano's: 8:00 - 9:30 pm">
-                            <span>Giordano's</span>
-                        </div>
-                        <div class="gantt-bar day-1-bar" style="left: 95.8%; width: 4.2%;" title="Hotel: 9:30 - 10:00 pm">
-                            <span>Hotel</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Day 2 -->
-                <div class="gantt-row">
-                    <div class="gantt-row-label day-2-label">Day 2</div>
-                    <div class="gantt-timeline">
-                        <div class="gantt-bar day-2-bar" style="left: 0%; width: 12.5%;" title="Skydeck: 9:00 - 10:30 am">
-                            <span>Skydeck</span>
-                        </div>
-                        <div class="gantt-bar day-2-bar" style="left: 12.5%; width: 20.8%;" title="Navy Pier: 10:30 - 1:00 pm">
-                            <span>Navy Pier</span>
-                        </div>
-                        <div class="gantt-bar day-2-bar" style="left: 33.3%; width: 8.3%;" title="Thrift Store: 1:00 - 2:00 pm">
-                            <span>Thrifting</span>
-                        </div>
-                        <div class="gantt-bar day-2-bar" style="left: 43.8%; width: 8.3%;" title="Hanabusa Cafe: 2:30 - 3:30 pm">
-                            <span>Hanabusa</span>
-                        </div>
-                        <div class="gantt-bar day-2-bar" style="left: 52.1%; width: 12.5%;" title="Hotel: 3:30 - 5:00 pm">
-                            <span>Hotel</span>
-                        </div>
-                        <div class="gantt-bar day-2-bar" style="left: 64.6%; width: 25%;" title="Meet Friend: 5:00 - 8:00 pm">
-                            <span>Meet Friend</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Day 3 -->
-                <div class="gantt-row">
-                    <div class="gantt-row-label day-3-label">Day 3</div>
-                    <div class="gantt-timeline">
-                        <div class="gantt-bar day-3-bar" style="left: 0%; width: 8.3%;" title="Gangnam Market: 9:00 - 10:00 am">
-                            <span>Gangnam Market</span>
-                        </div>
-                        <div class="gantt-bar day-3-bar" style="left: 12.5%; width: 12.5%;" title="Ssyal Ginseng House: 10:30 - 12:00 pm">
-                            <span>Ginseng House</span>
-                        </div>
-                        <div class="gantt-bar day-3-bar" style="left: 29.2%; width: 8.3%;" title="Rainbow Cone: 12:30 - 1:30 pm">
-                            <span>Rainbow Cone</span>
-                        </div>
-                        <div class="gantt-bar day-3-bar" style="left: 41.7%; width: 8.3%;" title="Superdawg: 2:00 - 3:00 pm">
-                            <span>Superdawg</span>
-                        </div>
-                        <div class="gantt-bar day-3-bar" style="left: 52.1%; width: 16.7%;" title="Hotel: 3:30 - 5:30 pm">
-                            <span>Hotel</span>
-                        </div>
-                        <div class="gantt-bar day-3-bar" style="left: 68.8%; width: 16.7%;" title="Chicago River Cruise: 5:30 - 7:30 pm">
-                            <span>River Cruise</span>
-                        </div>
-                        <div class="gantt-bar day-3-bar" style="left: 87.5%; width: 8.3%;" title="Jibaritos y Mas: 8:00 - 9:00 pm">
-                            <span>Jibaritos</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Day 4 -->
-                <div class="gantt-row">
-                    <div class="gantt-row-label day-4-label">Day 4</div>
-                    <div class="gantt-timeline">
-                        <div class="gantt-bar day-4-bar" style="left: 0%; width: 8.3%;" title="Goodwill: 9:00 - 10:00 am">
-                            <span>Goodwill</span>
-                        </div>
-                        <div class="gantt-bar day-4-bar" style="left: 12.5%; width: 8.3%;" title="Hotel Checkout: 10:30 - 11:30 am">
-                            <span>Hotel Checkout</span>
-                        </div>
-                    </div>
-                </div>
+            <div class="gantt-container" id="gantt-container">
+                <!-- Gantt chart will be dynamically generated -->
             </div>
         </div>
     </div>
@@ -1057,11 +984,6 @@
     
     .day-4.active {
         background-color: var(--danger-dark);
-    }
-    
-    .number-col {
-        width: 40px;
-        text-align: center;
     }
     
     .other-places .day-title::before {
