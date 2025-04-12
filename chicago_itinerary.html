@@ -1001,23 +1001,52 @@
                     
                     // For specific places, override with better labels
                     if (activity.place === 'Millennium Park & The Bean') {
-                        labelText = 'Bean';
+                        labelText = 'Bean Statue';
                     } else if (activity.place === 'Chicago Architecture River Cruise') {
-                        labelText = 'Cruise';
+                        labelText = 'River Cruise';
                     } else if (activity.place === 'Chicago Riverwalk') {
-                        labelText = 'Riverwalk';
+                        labelText = 'River Walk';
                     } else if (activity.place === 'The Magnificent Mile') {
-                        labelText = 'Mag Mile';
+                        labelText = 'Mag Mile Shopping';
                     } else if (activity.place === 'Chicago History Museum') {
-                        labelText = 'History';
+                        labelText = 'History Museum';
                     } else if (activity.place === 'Navy Pier') {
-                        labelText = 'Navy Pier';
+                        labelText = 'Navy Pier Visit';
                     } else if (activity.place === 'Field Museum') {
-                        labelText = 'Field';
+                        labelText = 'Field Museum';
                     } else if (activity.place === 'Shedd Aquarium') {
-                        labelText = 'Shedd';
+                        labelText = 'Shedd Aquarium';
                     } else if (activity.place === 'Grant Park') {
-                        labelText = 'Grant';
+                        labelText = 'Grant Park';
+                    } else if (activity.place === 'Lou Malnati\'s Pizzeria') {
+                        labelText = 'Deep Dish Pizza';
+                    } else if (activity.place === 'The Purple Pig') {
+                        labelText = 'Purple Pig Lunch';
+                    } else if (activity.place === 'The Gage') {
+                        labelText = 'Gage Gastropub';
+                    } else if (activity.place === 'Willis Tower Skydeck') {
+                        labelText = 'Willis Skydeck';
+                    } else if (activity.place === 'Kim and Carlo\'s Hot Dog Stand') {
+                        labelText = 'Hot Dog Lunch';
+                    } else if (activity.place === 'Lincoln Park Zoo') {
+                        labelText = 'Lincoln Zoo';
+                    } else if (activity.place === 'RJ Grunts') {
+                        labelText = 'RJ Grunts Lunch';
+                    } else if (activity.place === 'Wrigley Field') {
+                        labelText = 'Wrigley Field';
+                    } else if (activity.place === 'Wrigleyville') {
+                        labelText = 'Wrigleyville Area';
+                    } else if (activity.place === 'Smoke Daddy') {
+                        labelText = 'Smoke Daddy BBQ';
+                    } else if (activity.place === 'Portillo\'s') {
+                        labelText = 'Portillo\'s Dinner';
+                    }
+                    
+                    // Add activity type prefix if it's a distinctive action
+                    if (activity.activity === 'Lunch' && !labelText.includes('Lunch')) {
+                        labelText = 'Lunch: ' + labelText;
+                    } else if (activity.activity === 'Dinner' && !labelText.includes('Dinner')) {
+                        labelText = 'Dinner: ' + labelText;
                     }
                     
                     barText.innerHTML = `<a href="${mapUrl}" target="_blank" class="gantt-link">${labelText}</a>`;
