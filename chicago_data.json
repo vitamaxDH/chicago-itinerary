@@ -1,0 +1,351 @@
+{
+  "tripTitle": "Chicago Trip Itinerary with Maps",
+  "tripDates": "April 13-16, 2025",
+  "days": [
+    {
+      "id": 1,
+      "title": "Day 1: Sunday, April 13th",
+      "color": "#3b82f6",
+      "colorDark": "#2563eb",
+      "mapView": {
+        "lat": 41.8900,
+        "lng": -87.6250,
+        "zoom": 14
+      },
+      "activities": [
+        {
+          "id": 1,
+          "time": "2:00 - 4:00 pm",
+          "timeStart": 14,
+          "timeEnd": 16,
+          "activity": "Arrival in Chicago",
+          "place": "Millennium Park",
+          "address": "201 E Randolph St",
+          "note": "Explore area ~2 hours",
+          "coordinates": [41.8826, -87.6233]
+        },
+        {
+          "id": 2,
+          "time": "4:00 - 5:30 pm",
+          "timeStart": 16,
+          "timeEnd": 17.5,
+          "activity": "Walk & Shop",
+          "place": "Magnificent Mile",
+          "address": "North Michigan Avenue",
+          "note": "Walk & window shopping ~1.5 hours",
+          "coordinates": [41.8919, -87.6267]
+        },
+        {
+          "id": 3,
+          "time": "5:30 - 8:00 pm",
+          "timeStart": 17.5,
+          "timeEnd": 20,
+          "activity": "Move to Sunset location",
+          "place": "Chicago 360",
+          "address": "875 N Michigan Ave",
+          "note": "Arrive by ~6:00 pm for sunset at 7:30 pm",
+          "coordinates": [41.8962, -87.6242]
+        },
+        {
+          "id": 4,
+          "time": "8:00 - 9:30 pm",
+          "timeStart": 20,
+          "timeEnd": 21.5,
+          "activity": "Dinner nearby",
+          "place": "Giordano's Deep-Dish Pizza",
+          "address": "730 N Rush St",
+          "note": "Enjoy deep-dish pizza ~1.5 hours",
+          "coordinates": [41.8906, -87.6277]
+        },
+        {
+          "id": 5,
+          "time": "9:30 - 10:00 pm",
+          "timeStart": 21.5,
+          "timeEnd": 22,
+          "activity": "Hotel check-in",
+          "place": "Your Hotel",
+          "address": "Check-in by ~10 pm",
+          "note": "Relax & rest",
+          "coordinates": [41.8890, -87.6290]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Day 2: Monday, April 14th",
+      "color": "#10b981",
+      "colorDark": "#059669",
+      "mapView": {
+        "lat": 41.9000,
+        "lng": -87.6500,
+        "zoom": 12
+      },
+      "activities": [
+        {
+          "id": 1,
+          "time": "9:00 - 10:30 am",
+          "timeStart": 9,
+          "timeEnd": 10.5,
+          "activity": "Visit Skydeck (Daytime)",
+          "place": "Skydeck at Willis Tower",
+          "address": "233 S Wacker Dr",
+          "note": "Thrill experience ~1.5 hours",
+          "coordinates": [41.8789, -87.6350]
+        },
+        {
+          "id": 2,
+          "time": "10:30 - 1:00 pm",
+          "timeStart": 10.5,
+          "timeEnd": 13,
+          "activity": "Explore & Lunch",
+          "place": "Navy Pier",
+          "address": "600 E Grand Ave",
+          "note": "Lunch & sightseeing ~2.5 hours",
+          "coordinates": [41.8917, -87.6006]
+        },
+        {
+          "id": 3,
+          "time": "1:00 - 2:00 pm",
+          "timeStart": 13,
+          "timeEnd": 14,
+          "activity": "Thrifting",
+          "place": "Unique Thrift Store",
+          "address": "3748 N Elston Ave",
+          "note": "Shopping time ~1 hour",
+          "coordinates": [41.9468, -87.7125]
+        },
+        {
+          "id": 4,
+          "time": "2:30 - 3:30 pm",
+          "timeStart": 14.5,
+          "timeEnd": 15.5,
+          "activity": "Visit cafe for dessert",
+          "place": "Hanabusa Cafe",
+          "address": "942 W Randolph St",
+          "note": "Dessert time ~1 hour",
+          "coordinates": [41.8840, -87.6486]
+        },
+        {
+          "id": 5,
+          "time": "3:30 - 5:00 pm",
+          "timeStart": 15.5,
+          "timeEnd": 17,
+          "activity": "Short break at hotel",
+          "place": "Your Hotel",
+          "address": "Break/rest ~1.5 hours",
+          "note": "Prepare for evening",
+          "coordinates": [41.8890, -87.6290]
+        },
+        {
+          "id": 6,
+          "time": "5:00 - 8:00 pm",
+          "timeStart": 17,
+          "timeEnd": 20,
+          "activity": "Transit to meet friend",
+          "place": "Meeting friend",
+          "address": "Location as planned",
+          "note": "Evening with friend ~3 hours",
+          "coordinates": [41.8950, -87.6400]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Day 3: Tuesday, April 15th",
+      "color": "#f59e0b",
+      "colorDark": "#d97706",
+      "mapView": {
+        "lat": 41.9200,
+        "lng": -87.7000,
+        "zoom": 11
+      },
+      "activities": [
+        {
+          "id": 1,
+          "time": "9:00 - 10:00 am",
+          "timeStart": 9,
+          "timeEnd": 10,
+          "activity": "Shopping for Korean groceries",
+          "place": "Gangnam Market",
+          "address": "4005 W Lawrence Ave",
+          "note": "Shopping ~1 hour",
+          "coordinates": [41.9665, -87.7188]
+        },
+        {
+          "id": 2,
+          "time": "10:30 - 12:00 pm",
+          "timeStart": 10.5,
+          "timeEnd": 12,
+          "activity": "Visit nearby Korean restaurant",
+          "place": "Ssyal Ginseng House",
+          "address": "4201 W Lawrence Ave",
+          "note": "Early lunch ~1.5 hours",
+          "coordinates": [41.9651, -87.7234]
+        },
+        {
+          "id": 3,
+          "time": "12:30 - 1:30 pm",
+          "timeStart": 12.5,
+          "timeEnd": 13.5,
+          "activity": "Try local dessert",
+          "place": "Original Rainbow Cone",
+          "address": "9233 S Western Ave",
+          "note": "Dessert & sightseeing ~1 hour",
+          "coordinates": [41.7282, -87.6820]
+        },
+        {
+          "id": 4,
+          "time": "2:00 - 3:00 pm",
+          "timeStart": 14,
+          "timeEnd": 15,
+          "activity": "Explore and snack",
+          "place": "Superdawg",
+          "address": "6300 N Milwaukee Ave",
+          "note": "Snack break ~1 hour",
+          "coordinates": [41.9534, -87.7735]
+        },
+        {
+          "id": 5,
+          "time": "3:30 - 5:30 pm",
+          "timeStart": 15.5,
+          "timeEnd": 17.5,
+          "activity": "Short rest at hotel",
+          "place": "Your Hotel",
+          "address": "Rest & refresh ~2 hours",
+          "note": "Prepare for evening",
+          "coordinates": [41.8890, -87.6290]
+        },
+        {
+          "id": 6,
+          "time": "5:30 - 7:30 pm",
+          "timeStart": 17.5,
+          "timeEnd": 19.5,
+          "activity": "CAC Architecture Boat Cruise",
+          "place": "Chicago River",
+          "address": "Meeting point per booking",
+          "note": "Arrive 6:00 pm for sunset cruise",
+          "coordinates": [41.8875, -87.6314],
+          "isRiver": true,
+          "riverCoordinates": [
+            [41.8875, -87.6314],
+            [41.8850, -87.6290],
+            [41.8860, -87.6270],
+            [41.8880, -87.6330]
+          ]
+        },
+        {
+          "id": 7,
+          "time": "8:00 - 9:00 pm",
+          "timeStart": 20,
+          "timeEnd": 21,
+          "activity": "Dinner - Puerto Rican sandwich",
+          "place": "Jibaritos y Mas",
+          "address": "2603 W Division St",
+          "note": "Dinner ~1 hour",
+          "coordinates": [41.9029, -87.6762]
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Day 4: Wednesday, April 16th",
+      "color": "#ef4444",
+      "colorDark": "#dc2626",
+      "mapView": {
+        "lat": 41.8843,
+        "lng": -87.6538,
+        "zoom": 15
+      },
+      "activities": [
+        {
+          "id": 1,
+          "time": "9:00 - 10:00 am",
+          "timeStart": 9,
+          "timeEnd": 10,
+          "activity": "Final Shopping/Thrifting",
+          "place": "Goodwill",
+          "address": "1201 W Washington Blvd",
+          "note": "Shopping ~1 hour",
+          "coordinates": [41.8843, -87.6538]
+        },
+        {
+          "id": 2,
+          "time": "10:30 - 11:30 am",
+          "timeStart": 10.5,
+          "timeEnd": 11.5,
+          "activity": "Return to hotel, checkout",
+          "place": "Your Hotel",
+          "address": "Checkout & head to airport",
+          "note": "Checkout & head to airport ~11:30 am",
+          "coordinates": [41.8890, -87.6290]
+        }
+      ]
+    }
+  ],
+  "otherPlaces": [
+    {
+      "id": 1,
+      "activity": "Art & Culture Tour",
+      "place": "Art Institute of Chicago",
+      "address": "111 S Michigan Ave",
+      "note": "World-class art museum, near Millennium Park",
+      "coordinates": [41.8796, -87.6237]
+    },
+    {
+      "id": 2,
+      "activity": "Natural History Exploration",
+      "place": "Field Museum",
+      "address": "1400 S Lake Shore Dr",
+      "note": "Natural history museum with famous T-Rex \"Sue\"",
+      "coordinates": [41.8663, -87.6170]
+    },
+    {
+      "id": 3,
+      "activity": "Marine Life Experience",
+      "place": "Shedd Aquarium",
+      "address": "1200 S Lake Shore Dr",
+      "note": "Impressive aquarium with over 32,000 animals",
+      "coordinates": [41.8676, -87.6140]
+    },
+    {
+      "id": 4,
+      "activity": "Wildlife Viewing",
+      "place": "Lincoln Park Zoo",
+      "address": "2001 N Clark St",
+      "note": "Free zoo with over 200 species",
+      "coordinates": [41.9217, -87.6337]
+    },
+    {
+      "id": 5,
+      "activity": "Ballpark Tour or Game",
+      "place": "Wrigley Field",
+      "address": "1060 W Addison St",
+      "note": "Historic baseball stadium, home of the Cubs",
+      "coordinates": [41.9484, -87.6553]
+    },
+    {
+      "id": 6,
+      "activity": "Comedy Show",
+      "place": "The Second City",
+      "address": "1616 N Wells St",
+      "note": "Famous comedy club that launched many careers",
+      "coordinates": [41.9117, -87.6373]
+    },
+    {
+      "id": 7,
+      "activity": "Interactive Exhibits",
+      "place": "Museum of Science and Industry",
+      "address": "5700 S Lake Shore Dr",
+      "note": "Largest science museum in the Western Hemisphere",
+      "coordinates": [41.7905, -87.5830]
+    },
+    {
+      "id": 8,
+      "activity": "Fountain Visit & Relaxation",
+      "place": "Grant Park",
+      "address": "337 E Randolph St",
+      "note": "Large urban park with Buckingham Fountain",
+      "coordinates": [41.8762, -87.6195]
+    }
+  ]
+} 
