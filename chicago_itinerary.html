@@ -557,21 +557,6 @@
             document.title = tripData.tripTitle;
             document.querySelector('.page-title').textContent = tripData.tripTitle;
             
-            // Create day buttons
-            const buttonContainer = document.querySelector('.button-container');
-            buttonContainer.innerHTML = '';
-            
-            tripData.days.forEach(day => {
-                const button = document.createElement('button');
-                button.onclick = function() { 
-                    showDayLocations(day.id); 
-                    updateDayWeatherPanel(day.id);
-                };
-                button.className = `day-button day-${day.id} ${day.id === 1 ? 'active' : ''}`;
-                button.textContent = day.title;
-                buttonContainer.appendChild(button);
-            });
-
             // Create day cards and tables
             const container = document.querySelector('.days-container');
             container.innerHTML = '';
@@ -1475,9 +1460,6 @@
             
             // Add cache clear button
             addCacheClearButton();
-            
-            // Show initial day weather
-            updateDayWeatherPanel(currentDay);
         });
 
         // Update the day weather panel with data for the specific day
@@ -1612,12 +1594,12 @@
             container.id = 'day-weather-panel';
             container.className = 'day-weather-panel';
             
-            // Initially hidden
-            container.style.display = 'none';
-            
             // Insert before the map
             const mapContainer = document.getElementById('map');
             mapContainer.parentNode.insertBefore(container, mapContainer);
+            
+            // Show the panel by default
+            updateDayWeatherPanel(currentDay);
         }
 
         // Add a simple function to check if the API key is working
@@ -1659,10 +1641,7 @@
         <h1 class="page-title">Chicago Trip Itinerary with Maps</h1>
 
         <div id="map" class="map-container"></div>
-        <div class="button-container">
-            <!-- Day buttons will be dynamically generated -->
-        </div>
-
+        
         <div class="days-container">
             <!-- Day cards will be dynamically generated -->
             </div>
