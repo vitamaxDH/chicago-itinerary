@@ -30,13 +30,6 @@
         <div class="day-card trip-info-container">
             <h2 class="day-title">Trip Information</h2>
             
-            <div class="tabs">
-                <button class="tab-button active" data-target="tickets-info">Tickets & Prices</button>
-                <button class="tab-button" data-target="weather-info">Weather & Sunset</button>
-            </div>
-            
-            <div class="tab-content">
-                <div class="tab-pane active" id="tickets-info">
             <div class="table-container">
                 <table class="itinerary-table">
                     <thead>
@@ -121,40 +114,6 @@
                         </tr>
                     </tbody>
                 </table>
-            </div>
-        </div>
-
-                <div class="tab-pane" id="weather-info">
-                    <div class="weather-section">
-                        <h3 class="section-title">Chicago Weather Information</h3>
-                        <p class="weather-note">Weather forecasts become more accurate closer to your trip date. Below are average temperatures and sunset times based on historical data.</p>
-                        
-            <div class="table-container">
-                <table class="itinerary-table">
-                    <thead>
-                        <tr>
-                                        <th>Day</th>
-                                        <th>Average High</th>
-                                        <th>Average Low</th>
-                                        <th>Precipitation</th>
-                                        <th>Sunrise</th>
-                                        <th>Sunset</th>
-                        </tr>
-                    </thead>
-                                <tbody id="weather-table-body">
-                                    <!-- This will be populated by JavaScript based on the month of the trip -->
-                    </tbody>
-                </table>
-            </div>
-                        
-                        <div class="seasonal-tips">
-                            <h4>Seasonal Tips</h4>
-                            <div id="seasonal-tips-content">
-                                <!-- This will be populated by JavaScript based on the month of the trip -->
-        </div>
-    </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
