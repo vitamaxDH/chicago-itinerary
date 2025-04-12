@@ -190,7 +190,11 @@ body {
 }
 
 .table-container {
-  padding: 1.25rem;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 15px;
+  border-radius: 10px;
 }
 
 .itinerary-table {
@@ -301,7 +305,8 @@ body {
   }
 
   .itinerary-table {
-    font-size: 0.85rem;
+    font-size: 0.875rem;
+    min-width: 650px;
   }
 
   .itinerary-table th, 
@@ -311,6 +316,12 @@ body {
 
   .time-col, .activity-col, .place-col, .address-col, .note-col {
     width: auto;
+    min-width: 110px;
+  }
+
+  .number-col {
+    width: 40px;
+    min-width: 40px;
   }
 }
 
