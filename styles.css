@@ -1,0 +1,335 @@
+/* Modern Chicago Itinerary Styles */
+:root {
+  --primary-color: #3b82f6;
+  --primary-dark: #2563eb;
+  --secondary-color: #10b981;
+  --secondary-dark: #059669;
+  --accent-color: #f59e0b;
+  --accent-dark: #d97706;
+  --danger-color: #ef4444;
+  --danger-dark: #dc2626;
+  --light-bg: #f8fafc;
+  --light-accent: #f1f5f9;
+  --border-color: #e2e8f0;
+  --text-primary: #1e293b;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 12px;
+  --transition: all 0.3s ease;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--light-bg);
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  text-align: center;
+  margin-bottom: 2rem;
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.page-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  border-radius: 2px;
+}
+
+.map-container {
+  width: 100%;
+  height: 450px;
+  margin-bottom: 2rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  transition: var(--transition);
+}
+
+.map-container:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.button-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 2.5rem;
+  justify-content: center;
+}
+
+.day-button {
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius);
+  font-weight: 600;
+  font-size: 1rem;
+  text-align: center;
+  min-width: 180px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  color: white;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.day-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.day-button.day-1 {
+  background-color: var(--primary-color);
+}
+
+.day-button.day-1:hover {
+  background-color: var(--primary-dark);
+}
+
+.day-button.day-2 {
+  background-color: var(--secondary-color);
+}
+
+.day-button.day-2:hover {
+  background-color: var(--secondary-dark);
+}
+
+.day-button.day-3 {
+  background-color: var(--accent-color);
+}
+
+.day-button.day-3:hover {
+  background-color: var(--accent-dark);
+}
+
+.day-button.day-4 {
+  background-color: var(--danger-color);
+}
+
+.day-button.day-4:hover {
+  background-color: var(--danger-dark);
+}
+
+.day-card {
+  background-color: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 2.5rem;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  transition: var(--transition);
+}
+
+.day-card:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.day-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  padding: 1.25rem;
+  background-color: var(--light-accent);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+  position: relative;
+}
+
+.day-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 5px;
+}
+
+.day-1 .day-title::before {
+  background-color: var(--primary-color);
+}
+
+.day-2 .day-title::before {
+  background-color: var(--secondary-color);
+}
+
+.day-3 .day-title::before {
+  background-color: var(--accent-color);
+}
+
+.day-4 .day-title::before {
+  background-color: var(--danger-color);
+}
+
+.table-container {
+  padding: 1.25rem;
+}
+
+.itinerary-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.95rem;
+}
+
+.itinerary-table th, 
+.itinerary-table td {
+  padding: 1rem;
+  text-align: left;
+}
+
+.itinerary-table th {
+  background-color: var(--light-accent);
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-bottom: 2px solid var(--border-color);
+  border-top: 1px solid var(--border-color);
+}
+
+.itinerary-table th:first-child {
+  border-left: 1px solid var(--border-color);
+  border-top-left-radius: var(--radius-sm);
+}
+
+.itinerary-table th:last-child {
+  border-right: 1px solid var(--border-color);
+  border-top-right-radius: var(--radius-sm);
+}
+
+.itinerary-table td {
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.itinerary-table tr:last-child td {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.itinerary-table tr:last-child td:first-child {
+  border-bottom-left-radius: var(--radius-sm);
+}
+
+.itinerary-table tr:last-child td:last-child {
+  border-bottom-right-radius: var(--radius-sm);
+}
+
+.itinerary-table td:first-child {
+  border-left: 1px solid var(--border-color);
+}
+
+.itinerary-table td:last-child {
+  border-right: 1px solid var(--border-color);
+}
+
+.itinerary-table tr:hover td {
+  background-color: rgba(241, 245, 249, 0.5);
+}
+
+.time-col {
+  width: 12%;
+  font-weight: 500;
+}
+
+.activity-col {
+  width: 20%;
+}
+
+.place-col {
+  width: 20%;
+  font-weight: 500;
+}
+
+.address-col {
+  width: 23%;
+  color: var(--text-muted);
+}
+
+.note-col {
+  width: 25%;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .button-container {
+    flex-direction: column;
+  }
+
+  .day-button {
+    width: 100%;
+  }
+
+  .map-container {
+    height: 350px;
+  }
+
+  .page-title {
+    font-size: 2rem;
+  }
+
+  .itinerary-table {
+    font-size: 0.85rem;
+  }
+
+  .itinerary-table th, 
+  .itinerary-table td {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .time-col, .activity-col, .place-col, .address-col, .note-col {
+    width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .map-container {
+    height: 300px;
+  }
+
+  .day-title {
+    font-size: 1.25rem;
+    padding: 1rem;
+  }
+
+  .itinerary-table {
+    font-size: 0.75rem;
+  }
+
+  .itinerary-table th, 
+  .itinerary-table td {
+    padding: 0.5rem 0.25rem;
+  }
+}
