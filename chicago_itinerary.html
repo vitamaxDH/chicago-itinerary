@@ -1090,14 +1090,64 @@
             });
         }
 
-        // Update document ready function to initialize tabs
+        // Add this to your JavaScript to handle weather data
+        function populateWeatherInfo() {
+            // Get month from trip data or default to June (for demonstration)
+            const tripMonth = 6; // June by default - in real app, extract from trip dates
+            
+            const weatherData = {
+                1: { month: 'January', high: '32°F', low: '18°F', precip: '1.8 in', sunrise: '7:18 AM', sunset: '4:52 PM', tips: 'Pack warm winter clothing with layers, thermal underwear, heavy coat, hat, gloves, and waterproof boots. The "Hawk" (cold wind) from Lake Michigan can make it feel much colder. Indoor attractions are recommended. Check for winter events like Chicago Restaurant Week.' },
+                2: { month: 'February', high: '35°F', low: '21°F', precip: '1.8 in', sunrise: '6:56 AM', sunset: '5:27 PM', tips: 'Still very cold, pack similar to January. The lake effect can cause heavy snow. Many museums offer free days for Illinois residents in February. Chicago Theatre Week usually occurs this month.' },
+                3: { month: 'March', high: '45°F', low: '30°F', precip: '2.5 in', sunrise: '6:17 AM', sunset: '5:59 PM', tips: 'Transitional month, pack layers that can be removed as temperatures fluctuate. Waterproof boots and rain gear recommended. St. Patrick's Day celebrations include dyeing the Chicago River green.' },
+                4: { month: 'April', high: '57°F', low: '40°F', precip: '3.7 in', sunrise: '5:27 AM', sunset: '6:33 PM', tips: 'Spring weather is unpredictable - pack layers, light jacket, and rain gear. Spring flowers begin blooming in parks and gardens. Baseball season opens at Wrigley Field and Guaranteed Rate Field.' },
+                5: { month: 'May', high: '68°F', low: '50°F', precip: '4.1 in', sunrise: '4:50 AM', sunset: '7:05 PM', tips: 'Pleasant temperatures but chance of rain - pack light layers, a jacket for evenings, and rain gear. Great time to explore the lakefront and parks. Outdoor farmers markets begin opening.' },
+                6: { month: 'June', high: '78°F', low: '59°F', precip: '3.9 in', sunrise: '4:36 AM', sunset: '7:30 PM', tips: 'Summer begins with warm days and mild nights. Pack light clothing, sunscreen, hat, and comfortable walking shoes. Beaches officially open. Many street festivals and outdoor concerts begin.' },
+                7: { month: 'July', high: '83°F', low: '65°F', precip: '3.7 in', sunrise: '4:47 AM', sunset: '7:27 PM', tips: 'Hot and humid - pack light, breathable clothing, sunscreen, hat, and sunglasses. Stay hydrated and be prepared for occasional thunderstorms. Taste of Chicago and other major festivals happen this month.' },
+                8: { month: 'August', high: '81°F', low: '64°F', precip: '4.0 in', sunrise: '5:13 AM', sunset: '6:54 PM', tips: 'Hot and humid - similar to July. Pack light clothing and rain gear for afternoon thunderstorms. Air & Water Show usually takes place this month. Great time for boat tours and beach activities.' },
+                9: { month: 'September', high: '74°F', low: '57°F', precip: '3.3 in', sunrise: '5:41 AM', sunset: '6:06 PM', tips: 'Pleasant temperatures with lower humidity. Pack layers for variable conditions. Jazz Festival and other cultural events. Less crowded than summer months but still lively.' },
+                10: { month: 'October', high: '62°F', low: '45°F', precip: '3.1 in', sunrise: '6:09 AM', sunset: '5:15 PM', tips: 'Fall colors appear - pack layers including a medium weight jacket. Chicago Marathon usually takes place. Halloween events throughout the city including Navy Pier's Pumpkin Nights.' },
+                11: { month: 'November', high: '48°F', low: '34°F', precip: '3.0 in', sunrise: '6:38 AM', sunset: '4:34 PM', tips: 'Temperatures drop - pack warm clothes, coat, hat, and gloves. Magnificent Mile Lights Festival kicks off holiday season. Fewer tourists make for easier access to attractions.' },
+                12: { month: 'December', high: '36°F', low: '24°F', precip: '2.3 in', sunrise: '7:13 AM', sunset: '4:22 PM', tips: 'Cold winter weather - pack warm winter clothing, boots, hat, and gloves. Festive season with Christmas markets, ice skating rinks, and holiday displays. Christkindlmarket in Daley Plaza is a must-visit.' }
+            };
+            
+            // Generate table rows for the month and surrounding months
+            const tableBody = document.getElementById('weather-table-body');
+            const monthsToShow = [tripMonth - 1, tripMonth, tripMonth + 1].filter(m => m >= 1 && m <= 12);
+            
+            monthsToShow.forEach(month => {
+                const data = weatherData[month];
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${data.month}</td>
+                    <td>${data.high}</td>
+                    <td>${data.low}</td>
+                    <td>${data.precip}</td>
+                    <td>${data.sunrise}</td>
+                    <td>${data.sunset}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // Add seasonal tips for the trip month
+            const tipsContent = document.getElementById('seasonal-tips-content');
+            tipsContent.innerHTML = `
+                <h5>${weatherData[tripMonth].month} Weather Tips:</h5>
+                <p>${weatherData[tripMonth].tips}</p>
+                <div class="weather-alerts">
+                    <p class="alert-note">* Check <a href="https://www.weather.gov/lot/" target="_blank">National Weather Service Chicago</a> for current forecasts and alerts before your trip.</p>
+                </div>
+            `;
+        }
+        
+        // Update the document ready function to initialize weather info
         document.addEventListener('DOMContentLoaded', async function() {
             await initMap();
             createUI();
             showDayLocations(currentDay);
             createKanbanView();
             createGanttChart();
-            initializeTabs();  // Initialize the tabs
+            initializeTabs();
+            populateWeatherInfo();  // Initialize weather information
         });
     </script>
 </head>
@@ -1117,6 +1167,139 @@
 
     <div class="container additional-container">
         <!-- Other places section will be dynamically generated -->
+    </div>
+
+    <div class="container">
+        <div class="day-card trip-info-container">
+            <h2 class="day-title">Trip Information</h2>
+            
+            <div class="tabs">
+                <button class="tab-button active" data-target="tickets-info">Tickets & Prices</button>
+                <button class="tab-button" data-target="weather-info">Weather & Sunset</button>
+            </div>
+            
+            <div class="tab-content">
+                <div class="tab-pane active" id="tickets-info">
+                    <div class="table-container">
+                        <table class="itinerary-table">
+                            <thead>
+                                <tr>
+                                    <th>Attraction</th>
+                                    <th>Adult Price</th>
+                                    <th>Child Price</th>
+                                    <th>Notes</th>
+                                    <th>Book Online</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Willis Tower Skydeck</td>
+                                    <td>$30-44</td>
+                                    <td>$22-35 (ages 3-11)</td>
+                                    <td>Prices vary by date/time. Save by booking in advance.</td>
+                                    <td><a href="https://theskydeck.com/plan-a-visit/buy-tickets/" target="_blank" class="map-link">Book</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Field Museum</td>
+                                    <td>$27-45</td>
+                                    <td>$20-38 (ages 3-11)</td>
+                                    <td>Basic admission: $27. All-Access Pass: $45</td>
+                                    <td><a href="https://www.fieldmuseum.org/visit/buy-tickets" target="_blank" class="map-link">Book</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Shedd Aquarium</td>
+                                    <td>$39.95-44.95</td>
+                                    <td>$29.95-34.95 (ages 3-11)</td>
+                                    <td>Prices vary by date. Chicago residents receive discounts.</td>
+                                    <td><a href="https://www.sheddaquarium.org/plan-a-visit/get-tickets" target="_blank" class="map-link">Book</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Chicago Architecture River Cruise</td>
+                                    <td>$44-52</td>
+                                    <td>$25-30 (ages 5-12)</td>
+                                    <td>90-minute cruise. Multiple departures daily. Book early.</td>
+                                    <td><a href="https://www.architecture.org/tours/detail/chicago-architecture-foundation-center-river-cruise-aboard-chicago-s-first-lady/" target="_blank" class="map-link">Book</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Art Institute of Chicago</td>
+                                    <td>$32</td>
+                                    <td>Free (under 14)</td>
+                                    <td>Chicago residents receive discounts. Free Thursday evenings for IL residents.</td>
+                                    <td><a href="https://www.artic.edu/visit/buy-tickets" target="_blank" class="map-link">Book</a></td>
+                                </tr>
+                                <tr>
+                                    <td>360 Chicago Observation Deck</td>
+                                    <td>$30-38</td>
+                                    <td>$20-22 (ages 3-11)</td>
+                                    <td>TILT experience costs extra ($8). Sun & Stars pass available.</td>
+                                    <td><a href="https://360chicago.com/tickets/" target="_blank" class="map-link">Book</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Lincoln Park Zoo</td>
+                                    <td>Free</td>
+                                    <td>Free</td>
+                                    <td>Open daily. Some special exhibits may have fees.</td>
+                                    <td><a href="https://www.lpzoo.org/visit/" target="_blank" class="map-link">Info</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Wrigley Field Tour</td>
+                                    <td>$30</td>
+                                    <td>$20 (ages 3-13)</td>
+                                    <td>Tours run daily during off-season. Limited on game days.</td>
+                                    <td><a href="https://www.mlb.com/cubs/wrigley-field/tours" target="_blank" class="map-link">Book</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Museum of Science and Industry</td>
+                                    <td>$21.95-29.95</td>
+                                    <td>$12.95-19.95 (ages 3-11)</td>
+                                    <td>Special exhibits and experiences cost extra.</td>
+                                    <td><a href="https://www.msichicago.org/visit/tickets/" target="_blank" class="map-link">Book</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Chicago CityPASS</td>
+                                    <td>$114</td>
+                                    <td>$93 (ages 3-11)</td>
+                                    <td>Includes 5 attractions: Shedd Aquarium, Field Museum, MSI/Art Institute, Skydeck, 360 Chicago. Valid 9 days.</td>
+                                    <td><a href="https://www.citypass.com/chicago" target="_blank" class="map-link">Book</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="tab-pane" id="weather-info">
+                    <div class="weather-section">
+                        <h3 class="section-title">Chicago Weather Information</h3>
+                        <p class="weather-note">Weather forecasts become more accurate closer to your trip date. Below are average temperatures and sunset times based on historical data.</p>
+                        
+                        <div class="table-container">
+                            <table class="itinerary-table">
+                                <thead>
+                                    <tr>
+                                        <th>Day</th>
+                                        <th>Average High</th>
+                                        <th>Average Low</th>
+                                        <th>Precipitation</th>
+                                        <th>Sunrise</th>
+                                        <th>Sunset</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="weather-table-body">
+                                    <!-- This will be populated by JavaScript based on the month of the trip -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="seasonal-tips">
+                            <h4>Seasonal Tips</h4>
+                            <div id="seasonal-tips-content">
+                                <!-- This will be populated by JavaScript based on the month of the trip -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="container">
@@ -1456,6 +1639,70 @@
     
     .tab-pane.active {
         display: block;
+    }
+
+    /* Trip Info Styles */
+    .trip-info-container {
+        margin-bottom: 40px;
+    }
+    
+    .section-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 15px 0;
+        color: #2c3e50;
+    }
+    
+    .weather-note, .alert-note {
+        font-size: 14px;
+        color: #64748b;
+        margin-bottom: 15px;
+    }
+    
+    .weather-section {
+        padding: 15px 0;
+    }
+    
+    .seasonal-tips {
+        background-color: #f8fafc;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 20px;
+    }
+    
+    .seasonal-tips h4 {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #334155;
+    }
+    
+    .seasonal-tips h5 {
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #475569;
+    }
+    
+    .seasonal-tips p {
+        font-size: 14px;
+        line-height: 1.5;
+        color: #475569;
+    }
+    
+    .weather-alerts {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px dashed #e2e8f0;
+    }
+    
+    .weather-alerts a {
+        color: #3b82f6;
+        text-decoration: none;
+    }
+    
+    .weather-alerts a:hover {
+        text-decoration: underline;
     }
     </style>
 </body>
