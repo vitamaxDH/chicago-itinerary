@@ -349,7 +349,20 @@ body {
 .kanban-view {
     overflow-x: auto;
     display: flex;
+    flex-direction: row;
     margin-bottom: 30px;
+}
+
+.kanban-container {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.kanban-board {
+    display: flex;
+    flex-direction: row;
+    min-width: 100%;
 }
 
 .kanban-column {
@@ -873,8 +886,15 @@ body {
         padding: 8px 4px;
     }
     
+    .kanban-view {
+        flex-direction: row;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
     .kanban-column {
         min-width: 200px;
+        flex-shrink: 0;
     }
     
     .gantt-timeline {
