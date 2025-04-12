@@ -1060,6 +1060,45 @@
                 ganttContainer.appendChild(row);
             });
         }
+
+        // Add this to your JavaScript to handle tab switching
+        function initializeTabs() {
+            // Get all tab buttons
+            const tabButtons = document.querySelectorAll('.tab-button');
+            
+            // Add click event to each button
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Get the target tab
+                    const targetId = this.getAttribute('data-target');
+                    
+                    // Remove active class from all buttons and panes
+                    document.querySelectorAll('.tab-button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    
+                    document.querySelectorAll('.tab-pane').forEach(pane => {
+                        pane.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Show the target pane
+                    document.getElementById(targetId).classList.add('active');
+                });
+            });
+        }
+
+        // Update document ready function to initialize tabs
+        document.addEventListener('DOMContentLoaded', async function() {
+            await initMap();
+            createUI();
+            showDayLocations(currentDay);
+            createKanbanView();
+            createGanttChart();
+            initializeTabs();  // Initialize the tabs
+        });
     </script>
 </head>
 <body class="bg-gray-100">
@@ -1073,29 +1112,36 @@
 
         <div class="days-container">
             <!-- Day cards will be dynamically generated -->
-            </div>
         </div>
+    </div>
 
     <div class="container additional-container">
         <!-- Other places section will be dynamically generated -->
-        </div>
+    </div>
 
     <div class="container">
-        <div class="day-card kanban-view">
-            <h2 class="day-title">Timeline View (Kanban Style)</h2>
-            <div class="kanban-container">
-                <div class="kanban-board" id="kanban-board">
-                    <!-- Kanban columns will be dynamically generated -->
+        <div class="day-card visualization-container">
+            <h2 class="day-title">Trip Visualization</h2>
+            
+            <div class="tabs">
+                <button class="tab-button active" data-target="kanban-view">Timeline View</button>
+                <button class="tab-button" data-target="gantt-view">Gantt Chart</button>
+            </div>
+            
+            <div class="tab-content">
+                <div class="tab-pane active" id="kanban-view">
+                    <div class="kanban-container">
+                        <div class="kanban-board" id="kanban-board">
+                            <!-- Kanban columns will be dynamically generated -->
+                        </div>
+                    </div>
                 </div>
-            </div>
-            </div>
-        </div>
-
-    <div class="container">
-        <div class="day-card gantt-view">
-            <h2 class="day-title">Gantt Chart View</h2>
-            <div class="gantt-container" id="gantt-container">
-                <!-- Gantt chart will be dynamically generated -->
+                
+                <div class="tab-pane" id="gantt-view">
+                    <div class="gantt-container" id="gantt-container">
+                        <!-- Gantt chart will be dynamically generated -->
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1366,6 +1412,50 @@
         .gantt-header-label {
             width: 80px;
         }
+    }
+
+    /* Tab Styles */
+    .visualization-container {
+        padding-bottom: 0;
+    }
+    
+    .tabs {
+        display: flex;
+        border-bottom: 1px solid #e2e8f0;
+        margin-bottom: 15px;
+    }
+    
+    .tab-button {
+        padding: 10px 20px;
+        background-color: transparent;
+        border: none;
+        border-bottom: 3px solid transparent;
+        cursor: pointer;
+        font-weight: 600;
+        color: #64748b;
+        transition: all 0.2s;
+    }
+    
+    .tab-button:hover {
+        color: #334155;
+        background-color: #f8fafc;
+    }
+    
+    .tab-button.active {
+        color: #3b82f6;
+        border-bottom-color: #3b82f6;
+    }
+    
+    .tab-content {
+        margin-top: 20px;
+    }
+    
+    .tab-pane {
+        display: none;
+    }
+    
+    .tab-pane.active {
+        display: block;
     }
     </style>
 </body>
