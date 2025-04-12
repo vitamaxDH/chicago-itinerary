@@ -135,6 +135,44 @@
             width: 40px;
             text-align: center;
         }
+        .map-link {
+            display: inline-block;
+            padding: 5px 10px;
+            background-color: #3b82f6;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        
+        .map-link:hover {
+            background-color: #2563eb;
+        }
+        
+        .map-link-col {
+            width: 60px;
+            text-align: center;
+        }
+        .place-link, .gantt-link {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .place-link:hover {
+            color: #3b82f6;
+            text-decoration: underline;
+        }
+        
+        .gantt-link {
+            color: white;
+        }
+        
+        .gantt-link:hover {
+            text-decoration: underline;
+        }
     </style>
     <script>
         let map;
@@ -574,6 +612,7 @@
                     <th class="place-col">Place</th>
                     <th class="address-col">Address</th>
                     <th class="note-col">Note</th>
+                    <th class="map-link-col">Map</th>
                 </tr>
             `;
             
@@ -581,6 +620,7 @@
             const tbody = document.createElement('tbody');
             day.activities.forEach(activity => {
                 const tr = document.createElement('tr');
+                const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activity.place + ' ' + activity.address)}`;
                 tr.innerHTML = `
                     <td>${activity.id}</td>
                     <td>${activity.time}</td>
@@ -588,6 +628,7 @@
                     <td>${activity.place}</td>
                     <td>${activity.address}</td>
                     <td>${activity.note}</td>
+                    <td><a href="${mapUrl}" target="_blank" class="map-link">View</a></td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -628,6 +669,7 @@
                     <th class="place-col">Place</th>
                     <th class="address-col">Address</th>
                     <th class="note-col">Note</th>
+                    <th class="map-link-col">Map</th>
                 </tr>
             `;
             
@@ -635,12 +677,14 @@
             const tbody = document.createElement('tbody');
             tripData.otherPlaces.forEach(place => {
                 const tr = document.createElement('tr');
+                const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.place + ' ' + place.address)}`;
                 tr.innerHTML = `
                     <td>${place.id}</td>
                     <td>${place.activity}</td>
                     <td>${place.place}</td>
                     <td>${place.address}</td>
                     <td>${place.note}</td>
+                    <td><a href="${mapUrl}" target="_blank" class="map-link">View</a></td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -841,7 +885,12 @@
                     
                     const placeDiv = document.createElement('div');
                     placeDiv.className = 'kanban-place';
-                    placeDiv.textContent = activity.place;
+                    
+                    // Create Google Maps URL
+                    const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activity.place + ' ' + activity.address)}`;
+                    
+                    // Create a hyperlink for the place name
+                    placeDiv.innerHTML = `<a href="${mapUrl}" target="_blank" class="place-link">${activity.place}</a>`;
                     
                     card.appendChild(timeDiv);
                     card.appendChild(activityDiv);
@@ -912,8 +961,12 @@
                     bar.style.width = `${width}%`;
                     bar.title = `${activity.place}: ${activity.time}`;
                     
+                    // Create Google Maps URL
+                    const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activity.place + ' ' + activity.address)}`;
+                    
+                    // Create a hyperlink for the text within the bar
                     const barText = document.createElement('span');
-                    barText.textContent = activity.place.split(' ')[0];  // First word of place
+                    barText.innerHTML = `<a href="${mapUrl}" target="_blank" class="gantt-link">${activity.place.split(' ')[0]}</a>`;  // First word of place
                     
                     bar.appendChild(barText);
                     rowTimeline.appendChild(bar);
@@ -937,12 +990,12 @@
 
         <div class="days-container">
             <!-- Day cards will be dynamically generated -->
+            </div>
         </div>
-    </div>
 
     <div class="container additional-container">
         <!-- Other places section will be dynamically generated -->
-    </div>
+        </div>
 
     <div class="container">
         <div class="day-card kanban-view">
@@ -952,8 +1005,8 @@
                     <!-- Kanban columns will be dynamically generated -->
                 </div>
             </div>
+            </div>
         </div>
-    </div>
 
     <div class="container">
         <div class="day-card gantt-view">
@@ -1157,6 +1210,12 @@
         color: white;
         font-weight: 500;
         cursor: default;
+        transition: all 0.2s ease;
+    }
+    
+    .gantt-bar:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.15);
     }
     
     .gantt-bar span {
@@ -1173,9 +1232,17 @@
         border: 1px solid #3b82f6;
     }
     
+    .day-1-bar:hover {
+        background-color: #3b82f6;
+    }
+    
     .day-2-bar {
         background-color: #6ee7b7;
         border: 1px solid #10b981;
+    }
+    
+    .day-2-bar:hover {
+        background-color: #10b981;
     }
     
     .day-3-bar {
@@ -1183,9 +1250,17 @@
         border: 1px solid #f59e0b;
     }
     
+    .day-3-bar:hover {
+        background-color: #f59e0b;
+    }
+    
     .day-4-bar {
         background-color: #fca5a5;
         border: 1px solid #ef4444;
+    }
+    
+    .day-4-bar:hover {
+        background-color: #ef4444;
     }
     
     @media (max-width: 768px) {
