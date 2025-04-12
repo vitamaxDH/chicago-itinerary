@@ -1106,6 +1106,40 @@
         // Cache expiration time - 30 minutes (in milliseconds)
         const CACHE_EXPIRATION = 30 * 60 * 1000;
 
+        // Function to create day tabs for the weather panel
+        function createWeatherDayTabs() {
+            // Get all days
+            return tripData.days.map(day => {
+                return `
+                <button 
+                    class="weather-day-tab ${day.id === currentDay ? 'active' : ''}" 
+                    data-day-id="${day.id}"
+                    style="background-color: ${day.color}; width: ${100 / tripData.days.length}%;"
+                >
+                    ${day.title}
+                </button>`;
+            }).join('');
+        }
+
+        // Function to attach event handlers to weather day tabs
+        function attachWeatherDayTabEvents() {
+            const dayTabs = document.querySelectorAll('.weather-day-tab');
+            dayTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const dayId = parseInt(this.getAttribute('data-day-id'));
+                    
+                    // Update active tab
+                    document.querySelectorAll('.weather-day-tab').forEach(t => {
+                        t.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Show the selected day's weather
+                    updateDayWeatherPanel(dayId);
+                });
+            });
+        }
+
         // Function to fetch weather data from OpenWeatherMap API
         function fetchWeatherData(day) {
             const weatherPanel = document.getElementById('day-weather-panel');
@@ -1120,14 +1154,22 @@
                 return;
             }
             
+            // Create tabs
+            const dayTabs = createWeatherDayTabs();
+            
             // Show loading state
             weatherPanel.innerHTML = `
                 <div class="day-weather-content">
-                    <div class="weather-day-title">${day.title}</div>
+                    <div class="weather-day-tabs">
+                        ${dayTabs}
+                    </div>
                     <div class="weather-loading">Loading weather data...</div>
                     <button id="close-weather-panel" class="close-weather-panel">×</button>
                 </div>
             `;
+            
+            // Attach events to tabs
+            attachWeatherDayTabEvents();
             
             // Add event listener to close button
             document.getElementById('close-weather-panel').addEventListener('click', function() {
@@ -1273,10 +1315,15 @@
             const sunriseTime = formatTime(sunrise);
             const sunsetTime = formatTime(sunset);
             
+            // Create tabs
+            const dayTabs = createWeatherDayTabs();
+            
             // Update the weather panel with the forecast data
             weatherPanel.innerHTML = `
                 <div class="day-weather-content">
-                    <div class="weather-day-title">${day.title}</div>
+                    <div class="weather-day-tabs">
+                        ${dayTabs}
+                    </div>
                     <div class="weather-date">${formattedDate}</div>
                     
                     <div class="weather-main">
@@ -1330,108 +1377,86 @@
                         Data from <a href="https://openweathermap.org/" target="_blank">OpenWeatherMap</a>
                     </div>
                     
-            <button id="close-weather-panel" class="close-weather-panel">×</button>
-        </div>
-    `;
-    
-    // Re-add event listener to close button
-    document.getElementById('close-weather-panel').addEventListener('click', function() {
-        weatherPanel.style.display = 'none';
-    });
-}
+                    <button id="close-weather-panel" class="close-weather-panel">×</button>
+                </div>
+            `;
+            
+            // Attach events to tabs
+            attachWeatherDayTabEvents();
+            
+            // Re-add event listener to close button
+            document.getElementById('close-weather-panel').addEventListener('click', function() {
+                weatherPanel.style.display = 'none';
+            });
+        }
 
-// Add a simple function to check if the API key is working
-function testWeatherAPI() {
-    const apiKey = '4d8fb5b93d4af21d66a2948710284366';
-    const lat = 41.8781;
-    const lon = -87.6298;
-    // Test the forecast API
-    const apiUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`;
-    
-    console.log('Testing Weather API connection...');
-    
-    fetch(apiUrl)
-        .then(response => {
-            console.log('API test response status:', response.status);
-            if (!response.ok) {
-                console.error('API test failed with status:', response.status);
-                return response.text().then(text => {
-                    console.error('API error details:', text);
-                    throw new Error(`API test failed: ${text}`);
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('API test successful! Forecast data received with', data.list.length, 'entries');
-            // Log the first few entries to see the format
-            const uniqueDates = [...new Set(data.list.map(item => item.dt_txt.split(' ')[0]))];
-            console.log('Available forecast dates:', uniqueDates);
-        })
-        .catch(error => {
-            console.error('API test error:', error);
-        });
-}
-
-// Display static weather data as fallback
-function displayStaticWeatherData(day, isFutureTrip = false) {
-    const weatherPanel = document.getElementById('day-weather-panel');
-    
-    // For demo: Always use June data
-    const month = 6;
-    const weatherData = {
-        month: "June", 
-        high: "78°F", 
-        low: "59°F", 
-        precip: "3.9 in", 
-        sunrise: "4:36 AM", 
-        sunset: "7:30 PM"
-    };
-    
-    // Update panel with static data
-    weatherPanel.innerHTML = `
-        <div class="day-weather-content">
-            <div class="weather-day-title">${day.title}</div>
-            <div class="weather-date">Average for ${weatherData.month}</div>
+        // Display static weather data as fallback
+        function displayStaticWeatherData(day, isFutureTrip = false) {
+            const weatherPanel = document.getElementById('day-weather-panel');
             
-            <div class="weather-info-grid">
-                <div class="weather-info-item">
-                    <div class="weather-icon">🌡️</div>
-                    <div class="weather-info-title">Temperature</div>
-                    <div class="weather-info-value">${weatherData.high} / ${weatherData.low}</div>
-                </div>
-                <div class="weather-info-item">
-                    <div class="weather-icon">☔</div>
-                    <div class="weather-info-title">Precipitation</div>
-                    <div class="weather-info-value">${weatherData.precip}</div>
-                </div>
-                <div class="weather-info-item">
-                    <div class="weather-icon">🌅</div>
-                    <div class="weather-info-title">Sunrise</div>
-                    <div class="weather-info-value">${weatherData.sunrise}</div>
-                </div>
-                <div class="weather-info-item">
-                    <div class="weather-icon">🌇</div>
-                    <div class="weather-info-title">Sunset</div>
-                    <div class="weather-info-value">${weatherData.sunset}</div>
-                </div>
-            </div>
+            // For demo: Always use June data
+            const month = 6;
+            const weatherData = {
+                month: "June", 
+                high: "78°F", 
+                low: "59°F", 
+                precip: "3.9 in", 
+                sunrise: "4:36 AM", 
+                sunset: "7:30 PM"
+            };
             
-            <div class="weather-static-notice">
-                ${isFutureTrip ? 
-                'Using historical averages for your 2025 trip. Real-time forecasts are only available within 5 days.' : 
-                'This is historical average data. Real-time forecast unavailable.'}
-            </div>
+            // Create tabs
+            const dayTabs = createWeatherDayTabs();
             
-            <button id="close-weather-panel" class="close-weather-panel">×</button>
-        </div>
-    `;
-    
-    // Re-add event listener to close button
-    document.getElementById('close-weather-panel').addEventListener('click', function() {
-        weatherPanel.style.display = 'none';
-    });
-}
+            // Update panel with static data
+            weatherPanel.innerHTML = `
+                <div class="day-weather-content">
+                    <div class="weather-day-tabs">
+                        ${dayTabs}
+                    </div>
+                    <div class="weather-date">Average for ${weatherData.month}</div>
+                    
+                    <div class="weather-info-grid">
+                        <div class="weather-info-item">
+                            <div class="weather-icon">🌡️</div>
+                            <div class="weather-info-title">Temperature</div>
+                            <div class="weather-info-value">${weatherData.high} / ${weatherData.low}</div>
+                        </div>
+                        <div class="weather-info-item">
+                            <div class="weather-icon">☔</div>
+                            <div class="weather-info-title">Precipitation</div>
+                            <div class="weather-info-value">${weatherData.precip}</div>
+                        </div>
+                        <div class="weather-info-item">
+                            <div class="weather-icon">🌅</div>
+                            <div class="weather-info-title">Sunrise</div>
+                            <div class="weather-info-value">${weatherData.sunrise}</div>
+                        </div>
+                        <div class="weather-info-item">
+                            <div class="weather-icon">🌇</div>
+                            <div class="weather-info-title">Sunset</div>
+                            <div class="weather-info-value">${weatherData.sunset}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="weather-static-notice">
+                        ${isFutureTrip ? 
+                        'Using historical averages for your 2025 trip. Real-time forecasts are only available within 5 days.' : 
+                        'This is historical average data. Real-time forecast unavailable.'}
+                    </div>
+                    
+                    <button id="close-weather-panel" class="close-weather-panel">×</button>
+                </div>
+            `;
+            
+            // Attach events to tabs
+            attachWeatherDayTabEvents();
+            
+            // Re-add event listener to close button
+            document.getElementById('close-weather-panel').addEventListener('click', function() {
+                weatherPanel.style.display = 'none';
+            });
+        }
 
         // Run the API test when the page loads
         document.addEventListener('DOMContentLoaded', async function() {
@@ -1468,6 +1493,16 @@ function displayStaticWeatherData(day, isFutureTrip = false) {
             
             // Display the panel
             weatherPanel.style.display = 'block';
+            
+            // Update active tab visualization
+            document.querySelectorAll('.weather-day-tab').forEach(tab => {
+                const tabDayId = parseInt(tab.getAttribute('data-day-id'));
+                if (tabDayId === dayId) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
             
             // Enable this for testing the API with current weather
             const testWeatherApi = true; // Set to false for normal behavior
@@ -1584,6 +1619,39 @@ function displayStaticWeatherData(day, isFutureTrip = false) {
             const mapContainer = document.getElementById('map');
             mapContainer.parentNode.insertBefore(container, mapContainer);
         }
+
+        // Add a simple function to check if the API key is working
+        function testWeatherAPI() {
+            const apiKey = '4d8fb5b93d4af21d66a2948710284366';
+            const lat = 41.8781;
+            const lon = -87.6298;
+            // Test the forecast API
+            const apiUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`;
+            
+            console.log('Testing Weather API connection...');
+            
+            fetch(apiUrl)
+                .then(response => {
+                    console.log('API test response status:', response.status);
+                    if (!response.ok) {
+                        console.error('API test failed with status:', response.status);
+                        return response.text().then(text => {
+                            console.error('API error details:', text);
+                            throw new Error(`API test failed: ${text}`);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('API test successful! Forecast data received with', data.list.length, 'entries');
+                    // Log the first few entries to see the format
+                    const uniqueDates = [...new Set(data.list.map(item => item.dt_txt.split(' ')[0]))];
+                    console.log('Available forecast dates:', uniqueDates);
+                })
+                .catch(error => {
+                    console.error('API test error:', error);
+                });
+        }
     </script>
 </head>
 <body class="bg-gray-100">
@@ -1597,8 +1665,8 @@ function displayStaticWeatherData(day, isFutureTrip = false) {
 
         <div class="days-container">
             <!-- Day cards will be dynamically generated -->
+            </div>
         </div>
-    </div>
 
     <div class="container additional-container">
         <!-- Other places section will be dynamically generated -->
@@ -1615,122 +1683,122 @@ function displayStaticWeatherData(day, isFutureTrip = false) {
             
             <div class="tab-content">
                 <div class="tab-pane active" id="tickets-info">
-                    <div class="table-container">
-                        <table class="itinerary-table">
-                            <thead>
-                                <tr>
+            <div class="table-container">
+                <table class="itinerary-table">
+                    <thead>
+                        <tr>
                                     <th>Attraction</th>
                                     <th>Adult Price</th>
                                     <th>Child Price</th>
                                     <th>Notes</th>
                                     <th>Book Online</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
                                     <td>Willis Tower Skydeck</td>
                                     <td>$30-44</td>
                                     <td>$22-35 (ages 3-11)</td>
                                     <td>Prices vary by date/time. Save by booking in advance.</td>
                                     <td><a href="https://theskydeck.com/plan-a-visit/buy-tickets/" target="_blank" class="map-link">Book</a></td>
-                                </tr>
-                                <tr>
+                        </tr>
+                        <tr>
                                     <td>Field Museum</td>
                                     <td>$27-45</td>
                                     <td>$20-38 (ages 3-11)</td>
                                     <td>Basic admission: $27. All-Access Pass: $45</td>
                                     <td><a href="https://www.fieldmuseum.org/visit/buy-tickets" target="_blank" class="map-link">Book</a></td>
-                                </tr>
-                                <tr>
+                        </tr>
+                        <tr>
                                     <td>Shedd Aquarium</td>
                                     <td>$39.95-44.95</td>
                                     <td>$29.95-34.95 (ages 3-11)</td>
                                     <td>Prices vary by date. Chicago residents receive discounts.</td>
                                     <td><a href="https://www.sheddaquarium.org/plan-a-visit/get-tickets" target="_blank" class="map-link">Book</a></td>
-                                </tr>
-                                <tr>
+                        </tr>
+                        <tr>
                                     <td>Chicago Architecture River Cruise</td>
                                     <td>$44-52</td>
                                     <td>$25-30 (ages 5-12)</td>
                                     <td>90-minute cruise. Multiple departures daily. Book early.</td>
                                     <td><a href="https://www.architecture.org/tours/detail/chicago-architecture-foundation-center-river-cruise-aboard-chicago-s-first-lady/" target="_blank" class="map-link">Book</a></td>
-                                </tr>
-                                <tr>
+                        </tr>
+                        <tr>
                                     <td>Art Institute of Chicago</td>
                                     <td>$32</td>
                                     <td>Free (under 14)</td>
                                     <td>Chicago residents receive discounts. Free Thursday evenings for IL residents.</td>
                                     <td><a href="https://www.artic.edu/visit/buy-tickets" target="_blank" class="map-link">Book</a></td>
-                                </tr>
-                                <tr>
+                        </tr>
+                        <tr>
                                     <td>360 Chicago Observation Deck</td>
                                     <td>$30-38</td>
                                     <td>$20-22 (ages 3-11)</td>
                                     <td>TILT experience costs extra ($8). Sun & Stars pass available.</td>
                                     <td><a href="https://360chicago.com/tickets/" target="_blank" class="map-link">Book</a></td>
-                                </tr>
+                        </tr>
                                 <tr>
                                     <td>Lincoln Park Zoo</td>
                                     <td>Free</td>
                                     <td>Free</td>
                                     <td>Open daily. Some special exhibits may have fees.</td>
                                     <td><a href="https://www.lpzoo.org/visit/" target="_blank" class="map-link">Info</a></td>
-                                </tr>
+                        </tr>
                                 <tr>
                                     <td>Wrigley Field Tour</td>
                                     <td>$30</td>
                                     <td>$20 (ages 3-13)</td>
                                     <td>Tours run daily during off-season. Limited on game days.</td>
                                     <td><a href="https://www.mlb.com/cubs/wrigley-field/tours" target="_blank" class="map-link">Book</a></td>
-                                </tr>
-                                <tr>
+                        </tr>
+                        <tr>
                                     <td>Museum of Science and Industry</td>
                                     <td>$21.95-29.95</td>
                                     <td>$12.95-19.95 (ages 3-11)</td>
                                     <td>Special exhibits and experiences cost extra.</td>
                                     <td><a href="https://www.msichicago.org/visit/tickets/" target="_blank" class="map-link">Book</a></td>
-                                </tr>
-                                <tr>
+                        </tr>
+                        <tr>
                                     <td>Chicago CityPASS</td>
                                     <td>$114</td>
                                     <td>$93 (ages 3-11)</td>
                                     <td>Includes 5 attractions: Shedd Aquarium, Field Museum, MSI/Art Institute, Skydeck, 360 Chicago. Valid 9 days.</td>
                                     <td><a href="https://www.citypass.com/chicago" target="_blank" class="map-link">Book</a></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
                 <div class="tab-pane" id="weather-info">
                     <div class="weather-section">
                         <h3 class="section-title">Chicago Weather Information</h3>
                         <p class="weather-note">Weather forecasts become more accurate closer to your trip date. Below are average temperatures and sunset times based on historical data.</p>
                         
-                        <div class="table-container">
-                            <table class="itinerary-table">
-                                <thead>
-                                    <tr>
+            <div class="table-container">
+                <table class="itinerary-table">
+                    <thead>
+                        <tr>
                                         <th>Day</th>
                                         <th>Average High</th>
                                         <th>Average Low</th>
                                         <th>Precipitation</th>
                                         <th>Sunrise</th>
                                         <th>Sunset</th>
-                                    </tr>
-                                </thead>
+                        </tr>
+                    </thead>
                                 <tbody id="weather-table-body">
                                     <!-- This will be populated by JavaScript based on the month of the trip -->
-                                </tbody>
-                            </table>
-                        </div>
+                    </tbody>
+                </table>
+            </div>
                         
                         <div class="seasonal-tips">
                             <h4>Seasonal Tips</h4>
                             <div id="seasonal-tips-content">
                                 <!-- This will be populated by JavaScript based on the month of the trip -->
-                            </div>
-                        </div>
+        </div>
+    </div>
                     </div>
                 </div>
             </div>
@@ -2155,14 +2223,11 @@ function displayStaticWeatherData(day, isFutureTrip = false) {
         display: flex;
         flex-direction: column;
         align-items: center;
+        width: 100%;
     }
     
     .weather-day-title {
-        font-size: 20px;
-        font-weight: 700;
-        margin-bottom: 15px;
-        text-align: center;
-        text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        display: none; /* Hide the title since we now have tabs */
     }
     
     .weather-info-grid {
@@ -2293,6 +2358,61 @@ function displayStaticWeatherData(day, isFutureTrip = false) {
         padding: 20px;
         text-align: center;
         font-style: italic;
+    }
+
+    /* Day Weather Tabs Styles */
+    .weather-day-tabs {
+        display: flex;
+        width: 100%;
+        margin-bottom: 15px;
+        border-radius: 8px 8px 0 0;
+        overflow: hidden;
+    }
+    
+    .weather-day-tab {
+        padding: 10px;
+        text-align: center;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        position: relative;
+        outline: none;
+    }
+    
+    .weather-day-tab:hover {
+        filter: brightness(1.1);
+    }
+    
+    .weather-day-tab.active::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 25%;
+        width: 50%;
+        height: 3px;
+        background-color: white;
+        border-radius: 2px;
+    }
+    
+    /* Update day-weather-content to fit the new layout */
+    .day-weather-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+    
+    .weather-day-title {
+        display: none; /* Hide the title since we now have tabs */
+    }
+    
+    @media (max-width: 768px) {
+        .weather-day-tab {
+            font-size: 12px;
+            padding: 8px 4px;
+        }
     }
     </style>
 </body>
