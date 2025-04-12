@@ -1460,6 +1460,9 @@
             
             // Add cache clear button
             addCacheClearButton();
+            
+            // Show initial day weather
+            updateDayWeatherPanel(currentDay);
         });
 
         // Update the day weather panel with data for the specific day
@@ -1594,12 +1597,12 @@
             container.id = 'day-weather-panel';
             container.className = 'day-weather-panel';
             
+            // Initially hidden
+            container.style.display = 'none';
+            
             // Insert before the map
             const mapContainer = document.getElementById('map');
             mapContainer.parentNode.insertBefore(container, mapContainer);
-            
-            // Show the panel by default
-            updateDayWeatherPanel(currentDay);
         }
 
         // Add a simple function to check if the API key is working
