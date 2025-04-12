@@ -165,7 +165,7 @@
                 [41.8962, -87.6242], // Chicago 360
                 [41.8906, -87.6277]  // Giordano's
             ];
-            
+
             // Day 2 Locations
             const day2Coords = [
                 [41.8789, -87.6350], // Skydeck
@@ -173,7 +173,7 @@
                 [41.9468, -87.7125], // Unique Thrift Store
                 [41.8840, -87.6486]  // Hanabusa Cafe
             ];
-            
+
             // Day 3 Locations
             const day3Coords = [
                 [41.9665, -87.7188], // Gangnam Market
@@ -183,7 +183,7 @@
                 [41.8875, -87.6314], // Chicago River
                 [41.9029, -87.6762]  // Jibaritos y Mas
             ];
-            
+
             // Day 4 Locations
             const day4Coords = [
                 [41.8843, -87.6538]  // Goodwill
@@ -204,7 +204,7 @@
             //Initial map setup
             showDay1Locations();
         }
-        
+
         // Function to create markers for a day
         function createDayMarkers(coords, markers, dayLabel, color) {
             coords.forEach((coord, index) => {
@@ -794,6 +794,246 @@
                     </tbody>
                 </table>
             </div>
+            </div>
+        </div>
+
+    <div class="container">
+        <div class="day-card kanban-view">
+            <h2 class="day-title">Timeline View (Kanban Style)</h2>
+            <div class="kanban-container">
+                <div class="kanban-board">
+                    <div class="kanban-column">
+                        <h3 class="kanban-column-title day-1-title">Day 1: Sunday</h3>
+                        <div class="kanban-card">
+                            <div class="kanban-time">2:00 - 4:00 pm</div>
+                            <div class="kanban-activity">Arrival in Chicago</div>
+                            <div class="kanban-place">Millennium Park</div>
+                        </div>
+                        <div class="kanban-card">
+                            <div class="kanban-time">4:00 - 5:30 pm</div>
+                            <div class="kanban-activity">Walk & Shop</div>
+                            <div class="kanban-place">Magnificent Mile</div>
+                        </div>
+                        <div class="kanban-card">
+                            <div class="kanban-time">5:30 - 8:00 pm</div>
+                            <div class="kanban-activity">Move to Sunset location</div>
+                            <div class="kanban-place">Chicago 360</div>
+                        </div>
+                        <div class="kanban-card">
+                            <div class="kanban-time">8:00 - 9:30 pm</div>
+                            <div class="kanban-activity">Dinner nearby</div>
+                            <div class="kanban-place">Giordano's Pizza</div>
+                        </div>
+                        <div class="kanban-card">
+                            <div class="kanban-time">9:30 - 10:00 pm</div>
+                            <div class="kanban-activity">Hotel check-in</div>
+                            <div class="kanban-place">Your Hotel</div>
+            </div>
+        </div>
+
+                    <div class="kanban-column">
+                        <h3 class="kanban-column-title day-2-title">Day 2: Monday</h3>
+                        <div class="kanban-card">
+                            <div class="kanban-time">9:00 - 10:30 am</div>
+                            <div class="kanban-activity">Visit Skydeck</div>
+                            <div class="kanban-place">Willis Tower</div>
+            </div>
+                        <div class="kanban-card">
+                            <div class="kanban-time">10:30 - 1:00 pm</div>
+                            <div class="kanban-activity">Explore & Lunch</div>
+                            <div class="kanban-place">Navy Pier</div>
+        </div>
+                        <div class="kanban-card">
+                            <div class="kanban-time">1:00 - 2:00 pm</div>
+                            <div class="kanban-activity">Thrifting</div>
+                            <div class="kanban-place">Unique Thrift Store</div>
+    </div>
+                        <div class="kanban-card">
+                            <div class="kanban-time">2:30 - 3:30 pm</div>
+                            <div class="kanban-activity">Visit cafe for dessert</div>
+                            <div class="kanban-place">Hanabusa Cafe</div>
+                        </div>
+                        <div class="kanban-card">
+                            <div class="kanban-time">3:30 - 5:00 pm</div>
+                            <div class="kanban-activity">Short break</div>
+                            <div class="kanban-place">Your Hotel</div>
+                        </div>
+                        <div class="kanban-card">
+                            <div class="kanban-time">5:00 - 8:00 pm</div>
+                            <div class="kanban-activity">Transit to meet friend</div>
+                            <div class="kanban-place">Location as planned</div>
+                        </div>
+                    </div>
+                    
+                    <div class="kanban-column">
+                        <h3 class="kanban-column-title day-3-title">Day 3: Tuesday</h3>
+                        <div class="kanban-card">
+                            <div class="kanban-time">9:00 - 10:00 am</div>
+                            <div class="kanban-activity">Korean groceries</div>
+                            <div class="kanban-place">Gangnam Market</div>
+                        </div>
+                        <div class="kanban-card">
+                            <div class="kanban-time">10:30 - 12:00 pm</div>
+                            <div class="kanban-activity">Korean restaurant</div>
+                            <div class="kanban-place">Ssyal Ginseng House</div>
+                        </div>
+                        <div class="kanban-card">
+                            <div class="kanban-time">12:30 - 1:30 pm</div>
+                            <div class="kanban-activity">Local dessert</div>
+                            <div class="kanban-place">Rainbow Cone</div>
+                        </div>
+                        <div class="kanban-card">
+                            <div class="kanban-time">2:00 - 3:00 pm</div>
+                            <div class="kanban-activity">Explore and snack</div>
+                            <div class="kanban-place">Superdawg</div>
+                        </div>
+                        <div class="kanban-card">
+                            <div class="kanban-time">3:30 - 5:30 pm</div>
+                            <div class="kanban-activity">Rest at hotel</div>
+                            <div class="kanban-place">Your Hotel</div>
+                        </div>
+                        <div class="kanban-card">
+                            <div class="kanban-time">5:30 - 7:30 pm</div>
+                            <div class="kanban-activity">Architecture Cruise</div>
+                            <div class="kanban-place">Chicago River</div>
+                        </div>
+                        <div class="kanban-card">
+                            <div class="kanban-time">8:00 - 9:00 pm</div>
+                            <div class="kanban-activity">Dinner</div>
+                            <div class="kanban-place">Jibaritos y Mas</div>
+                        </div>
+                    </div>
+                    
+                    <div class="kanban-column">
+                        <h3 class="kanban-column-title day-4-title">Day 4: Wednesday</h3>
+                        <div class="kanban-card">
+                            <div class="kanban-time">9:00 - 10:00 am</div>
+                            <div class="kanban-activity">Final Shopping</div>
+                            <div class="kanban-place">Goodwill</div>
+                        </div>
+                        <div class="kanban-card">
+                            <div class="kanban-time">10:30 - 11:30 am</div>
+                            <div class="kanban-activity">Hotel checkout</div>
+                            <div class="kanban-place">Your Hotel</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="day-card gantt-view">
+            <h2 class="day-title">Gantt Chart View</h2>
+            <div class="gantt-container">
+                <div class="gantt-header">
+                    <div class="gantt-header-label"></div>
+                    <div class="gantt-timeline">
+                        <div class="gantt-time-marker">9am</div>
+                        <div class="gantt-time-marker">10am</div>
+                        <div class="gantt-time-marker">11am</div>
+                        <div class="gantt-time-marker">12pm</div>
+                        <div class="gantt-time-marker">1pm</div>
+                        <div class="gantt-time-marker">2pm</div>
+                        <div class="gantt-time-marker">3pm</div>
+                        <div class="gantt-time-marker">4pm</div>
+                        <div class="gantt-time-marker">5pm</div>
+                        <div class="gantt-time-marker">6pm</div>
+                        <div class="gantt-time-marker">7pm</div>
+                        <div class="gantt-time-marker">8pm</div>
+                        <div class="gantt-time-marker">9pm</div>
+                        <div class="gantt-time-marker">10pm</div>
+                    </div>
+                </div>
+                
+                <!-- Day 1 -->
+                <div class="gantt-row">
+                    <div class="gantt-row-label day-1-label">Day 1</div>
+                    <div class="gantt-timeline">
+                        <div class="gantt-bar day-1-bar" style="left: 33.3%; width: 16.7%;" title="Millennium Park: 2:00 - 4:00 pm">
+                            <span>Millennium Park</span>
+                        </div>
+                        <div class="gantt-bar day-1-bar" style="left: 50%; width: 12.5%;" title="Magnificent Mile: 4:00 - 5:30 pm">
+                            <span>Magnificent Mile</span>
+                        </div>
+                        <div class="gantt-bar day-1-bar" style="left: 62.5%; width: 20.8%;" title="Chicago 360: 5:30 - 8:00 pm">
+                            <span>Chicago 360</span>
+                        </div>
+                        <div class="gantt-bar day-1-bar" style="left: 83.3%; width: 12.5%;" title="Giordano's: 8:00 - 9:30 pm">
+                            <span>Giordano's</span>
+                        </div>
+                        <div class="gantt-bar day-1-bar" style="left: 95.8%; width: 4.2%;" title="Hotel: 9:30 - 10:00 pm">
+                            <span>Hotel</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Day 2 -->
+                <div class="gantt-row">
+                    <div class="gantt-row-label day-2-label">Day 2</div>
+                    <div class="gantt-timeline">
+                        <div class="gantt-bar day-2-bar" style="left: 0%; width: 12.5%;" title="Skydeck: 9:00 - 10:30 am">
+                            <span>Skydeck</span>
+                        </div>
+                        <div class="gantt-bar day-2-bar" style="left: 12.5%; width: 20.8%;" title="Navy Pier: 10:30 - 1:00 pm">
+                            <span>Navy Pier</span>
+                        </div>
+                        <div class="gantt-bar day-2-bar" style="left: 33.3%; width: 8.3%;" title="Thrift Store: 1:00 - 2:00 pm">
+                            <span>Thrifting</span>
+                        </div>
+                        <div class="gantt-bar day-2-bar" style="left: 43.8%; width: 8.3%;" title="Hanabusa Cafe: 2:30 - 3:30 pm">
+                            <span>Hanabusa</span>
+                        </div>
+                        <div class="gantt-bar day-2-bar" style="left: 52.1%; width: 12.5%;" title="Hotel: 3:30 - 5:00 pm">
+                            <span>Hotel</span>
+                        </div>
+                        <div class="gantt-bar day-2-bar" style="left: 64.6%; width: 25%;" title="Meet Friend: 5:00 - 8:00 pm">
+                            <span>Meet Friend</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Day 3 -->
+                <div class="gantt-row">
+                    <div class="gantt-row-label day-3-label">Day 3</div>
+                    <div class="gantt-timeline">
+                        <div class="gantt-bar day-3-bar" style="left: 0%; width: 8.3%;" title="Gangnam Market: 9:00 - 10:00 am">
+                            <span>Gangnam Market</span>
+                        </div>
+                        <div class="gantt-bar day-3-bar" style="left: 12.5%; width: 12.5%;" title="Ssyal Ginseng House: 10:30 - 12:00 pm">
+                            <span>Ginseng House</span>
+                        </div>
+                        <div class="gantt-bar day-3-bar" style="left: 29.2%; width: 8.3%;" title="Rainbow Cone: 12:30 - 1:30 pm">
+                            <span>Rainbow Cone</span>
+                        </div>
+                        <div class="gantt-bar day-3-bar" style="left: 41.7%; width: 8.3%;" title="Superdawg: 2:00 - 3:00 pm">
+                            <span>Superdawg</span>
+                        </div>
+                        <div class="gantt-bar day-3-bar" style="left: 52.1%; width: 16.7%;" title="Hotel: 3:30 - 5:30 pm">
+                            <span>Hotel</span>
+                        </div>
+                        <div class="gantt-bar day-3-bar" style="left: 68.8%; width: 16.7%;" title="Chicago River Cruise: 5:30 - 7:30 pm">
+                            <span>River Cruise</span>
+                        </div>
+                        <div class="gantt-bar day-3-bar" style="left: 87.5%; width: 8.3%;" title="Jibaritos y Mas: 8:00 - 9:00 pm">
+                            <span>Jibaritos</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Day 4 -->
+                <div class="gantt-row">
+                    <div class="gantt-row-label day-4-label">Day 4</div>
+                    <div class="gantt-timeline">
+                        <div class="gantt-bar day-4-bar" style="left: 0%; width: 8.3%;" title="Goodwill: 9:00 - 10:00 am">
+                            <span>Goodwill</span>
+                        </div>
+                        <div class="gantt-bar day-4-bar" style="left: 12.5%; width: 8.3%;" title="Hotel Checkout: 10:30 - 11:30 am">
+                            <span>Hotel Checkout</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -826,6 +1066,226 @@
     
     .other-places .day-title::before {
         background-color: #6366f1;
+    }
+    
+    /* Kanban Board Styles */
+    .kanban-container {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 15px;
+    }
+    
+    .kanban-board {
+        display: flex;
+        min-width: 100%;
+        gap: 15px;
+        padding: 10px 0;
+    }
+    
+    .kanban-column {
+        flex: 1;
+        min-width: 250px;
+        background-color: #f8fafc;
+        border-radius: 8px;
+        padding: 10px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .kanban-column-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        padding: 8px;
+        text-align: center;
+        border-radius: 6px;
+        color: white;
+    }
+    
+    .day-1-title {
+        background-color: #3b82f6;
+    }
+    
+    .day-2-title {
+        background-color: #10b981;
+    }
+    
+    .day-3-title {
+        background-color: #f59e0b;
+    }
+    
+    .day-4-title {
+        background-color: #ef4444;
+    }
+    
+    .kanban-card {
+        background-color: white;
+        border-radius: 6px;
+        padding: 12px;
+        margin-bottom: 10px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        border-left: 4px solid #e2e8f0;
+    }
+    
+    .kanban-time {
+        font-size: 14px;
+        font-weight: 600;
+        color: #64748b;
+        margin-bottom: 5px;
+    }
+    
+    .kanban-activity {
+        font-size: 15px;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 5px;
+    }
+    
+    .kanban-place {
+        font-size: 14px;
+        color: #475569;
+        font-style: italic;
+    }
+    
+    /* Gantt Chart Styles */
+    .gantt-container {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 15px;
+        margin-top: 10px;
+    }
+    
+    .gantt-header {
+        display: flex;
+        height: 40px;
+        margin-bottom: 8px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .gantt-header-label {
+        width: 100px;
+        flex-shrink: 0;
+        padding: 8px;
+        font-weight: 600;
+        color: #334155;
+    }
+    
+    .gantt-timeline {
+        position: relative;
+        flex-grow: 1;
+        min-width: 800px;
+        display: flex;
+    }
+    
+    .gantt-time-marker {
+        flex: 1;
+        text-align: center;
+        font-size: 12px;
+        color: #64748b;
+        border-left: 1px solid #e2e8f0;
+        padding-top: 8px;
+    }
+    
+    .gantt-row {
+        display: flex;
+        height: 50px;
+        margin-bottom: 12px;
+    }
+    
+    .gantt-row-label {
+        width: 100px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        color: white;
+        border-radius: 4px;
+        margin-right: 6px;
+    }
+    
+    .day-1-label {
+        background-color: #3b82f6;
+    }
+    
+    .day-2-label {
+        background-color: #10b981;
+    }
+    
+    .day-3-label {
+        background-color: #f59e0b;
+    }
+    
+    .day-4-label {
+        background-color: #ef4444;
+    }
+    
+    .gantt-bar {
+        position: absolute;
+        height: 30px;
+        top: 10px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        font-size: 12px;
+        color: white;
+        font-weight: 500;
+        cursor: default;
+    }
+    
+    .gantt-bar span {
+        display: inline-block;
+        padding: 0 6px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+    
+    .day-1-bar {
+        background-color: #93c5fd;
+        border: 1px solid #3b82f6;
+    }
+    
+    .day-2-bar {
+        background-color: #6ee7b7;
+        border: 1px solid #10b981;
+    }
+    
+    .day-3-bar {
+        background-color: #fcd34d;
+        border: 1px solid #f59e0b;
+    }
+    
+    .day-4-bar {
+        background-color: #fca5a5;
+        border: 1px solid #ef4444;
+    }
+    
+    @media (max-width: 768px) {
+        .kanban-column {
+            min-width: 200px;
+        }
+        
+        .gantt-timeline {
+            min-width: 600px;
+        }
+        
+        .gantt-bar {
+            font-size: 10px;
+        }
+        
+        .gantt-row-label {
+            width: 80px;
+        }
+        
+        .gantt-header-label {
+            width: 80px;
+        }
     }
     </style>
 </body>
