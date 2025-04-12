@@ -964,9 +964,63 @@
                     // Create Google Maps URL
                     const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activity.place + ' ' + activity.address)}`;
                     
-                    // Create a hyperlink for the text within the bar
+                    // Create a more meaningful bar label
                     const barText = document.createElement('span');
-                    barText.innerHTML = `<a href="${mapUrl}" target="_blank" class="gantt-link">${activity.place.split(' ')[0]}</a>`;  // First word of place
+                    
+                    // Create a more descriptive label based on activity type and place
+                    let labelText = '';
+                    
+                    // For places that start with "The", use the next word instead
+                    if (activity.place.startsWith('The ')) {
+                        // For "The Purple Pig", show "Purple" or "Pig" depending on space
+                        const words = activity.place.split(' ');
+                        if (words.length > 2) {
+                            labelText = words[1]; // Get the second word instead of "The"
+                        } else {
+                            labelText = activity.place.substring(4); // Skip "The "
+                        }
+                    } else if (activity.place.includes(' ')) {
+                        // For places with multiple words, use a more distinctive word
+                        const words = activity.place.split(' ');
+                        // Try to use a distinctive word, not common words like "Park", "Museum", etc.
+                        const commonWords = ['park', 'museum', 'tower', 'pier', 'center', 'mile', 'chicago', 'field', 'aquarium'];
+                        let distinctiveWord = words[0];
+                        
+                        for (const word of words) {
+                            // If we find a word that's not common, use it
+                            if (!commonWords.includes(word.toLowerCase())) {
+                                distinctiveWord = word;
+                                break;
+                            }
+                        }
+                        labelText = distinctiveWord;
+                    } else {
+                        // For single-word places, use the full name
+                        labelText = activity.place;
+                    }
+                    
+                    // For specific places, override with better labels
+                    if (activity.place === 'Millennium Park & The Bean') {
+                        labelText = 'Bean';
+                    } else if (activity.place === 'Chicago Architecture River Cruise') {
+                        labelText = 'Cruise';
+                    } else if (activity.place === 'Chicago Riverwalk') {
+                        labelText = 'Riverwalk';
+                    } else if (activity.place === 'The Magnificent Mile') {
+                        labelText = 'Mag Mile';
+                    } else if (activity.place === 'Chicago History Museum') {
+                        labelText = 'History';
+                    } else if (activity.place === 'Navy Pier') {
+                        labelText = 'Navy Pier';
+                    } else if (activity.place === 'Field Museum') {
+                        labelText = 'Field';
+                    } else if (activity.place === 'Shedd Aquarium') {
+                        labelText = 'Shedd';
+                    } else if (activity.place === 'Grant Park') {
+                        labelText = 'Grant';
+                    }
+                    
+                    barText.innerHTML = `<a href="${mapUrl}" target="_blank" class="gantt-link">${labelText}</a>`;
                     
                     bar.appendChild(barText);
                     rowTimeline.appendChild(bar);
